@@ -1,587 +1,547 @@
-# Soluciones Notebook 04: Producción - NIVEL 2 WORKSHOP
-
-## 📋 TODOs del Módulo 4
-
-El notebook 04 contiene un archivo completo `module_4_api.py` con 12 TODOs para que los participantes completen. Los TODOs están divididos en:
-
-- **REQUERIDOS** (3 TODOs): Fundamentales para funcionamiento básico
-- **RECOMENDADOS** (7 TODOs): Importantes para producción
-- **OPCIONALES** (2 TODOs): Mejoras avanzadas
-
-## ✅ Estado Actual (Post-Corrección)
-
-### Mejoras Realizadas:
-1. ✅ Redis con fallback automático (funciona sin Redis)
-2. ✅ Rate limiting implementado como ejemplo
-3. ✅ L1 cache completamente funcional
-4. ✅ Métricas collector funcional
-5. ✅ Hints comprehensivos en cada TODO
-6. ✅ Dockerfile con curl para healthcheck
-
-## 🎯 Soluciones por TODO
-
-### TODO 1: Añadir validación adicional (OPCIONAL)
-
-**Ubicación**: QueryRequest model, línea ~52
-
-**Solución Básica**:
-```python
-class QueryRequest(BaseModel):
-    question: str = Field(..., min_length=1, max_length=500)
-    user_id: Optional[str] = Field(None, description="ID del usuario")
-    use_cache: bool = Field(True, description="Usar cache")
-
-    # TODO 1 - Solución
-    language: Optional[str] = Field("es", description="Idioma (es/en)")
-    detail_level: Optional[str] = Field("basic", description="Nivel de detalle (basic/complete)")
-    context: Optional[Dict[str, Any]] = Field(None, description="Contexto adicional")
-```
-
-**Solución Avanzada con Validators**:
-```python
-from pydantic import validator
-
-class QueryRequest(BaseModel):
-    question: str = Field(..., min_length=1, max_length=500)
-    user_id: Optional[str] = Field(None, description="ID del usuario")
-    use_cache: bool = Field(True, description="Usar cache")
-    language: Optional[str] = Field("es", description="Idioma")
-    detail_level: Optional[str] = Field("basic", description="Nivel de detalle")
-
-    @validator('question')
-    def validate_question(cls, v):
-        """Validar que la pregunta no contenga contenido inapropiado"""
-        forbidden_words = ['hack', 'exploit', 'bypass']
-        if any(word in v.lower() for word in forbidden_words):
-            raise ValueError('Pregunta contiene contenido inapropiado')
-        return v.strip()
-
-    @validator('language')
-    def validate_language(cls, v):
-        """Solo permitir idiomas soportados"""
-        allowed = ['es', 'en', 'fr', 'de']
-        if v not in allowed:
-            raise ValueError(f'Idioma debe ser uno de: {allowed}')
-        return v
-
-    @validator('detail_level')
-    def validate_detail_level(cls, v):
-        """Validar nivel de detalle"""
-        allowed = ['basic', 'complete', 'technical']
-        if v not in allowed:
-            raise ValueError(f'Detail level debe ser uno de: {allowed}')
-        return v
-```
+# 🎓 Guía del Instructor - Notebook 04: RAG en Producción
+## De Prototipo a Sistema Enterprise con FastAPI
 
 ---
 
-### TODO 2: Añadir campos adicionales al response (OPCIONAL)
+## 📋 Información General
 
-**Ubicación**: QueryResponse model, línea ~66
+**Duración:** 75 minutos (15:30-16:45)
+- **Teoría:** 30 min (15:30-16:00)
+- **Práctica:** 45 min (16:00-16:45)
 
-**Solución**:
-```python
-class QueryResponse(BaseModel):
-    answer: str
-    sources: List[Dict[str, Any]]
-    latency_ms: float
-    cache_hit: bool
-    timestamp: datetime
-
-    # TODO 2 - Solución
-    confidence_score: Optional[float] = Field(None, description="Confianza 0-1")
-    model_used: Optional[str] = Field("gpt-3.5-turbo", description="Modelo LLM usado")
-    tokens_used: Optional[int] = Field(None, description="Tokens consumidos")
-    query_id: Optional[str] = Field(None, description="UUID único del query")
-    warning: Optional[str] = Field(None, description="Advertencias si hay")
-```
-
-**Uso en el endpoint**:
-```python
-import uuid
-
-# Dentro del endpoint /query
-return QueryResponse(
-    answer=answer,
-    sources=sources,
-    latency_ms=latency,
-    cache_hit=cache_hit,
-    timestamp=datetime.now(),
-    # Campos adicionales
-    confidence_score=result.get("confidence", 0.85),
-    model_used="gpt-3.5-turbo",
-    tokens_used=result.get("tokens_used", 150),
-    query_id=str(uuid.uuid4()),
-    warning=None if len(sources) > 0 else "Pocas fuentes encontradas"
-)
-```
+**Objetivo:** Llevar RAG a producción con FastAPI, Docker y mejores prácticas
+**Nivel:** Avanzado - Enterprise
+**Pre-requisitos:** Módulos 1-3 completados
 
 ---
 
-### TODO 3: Implementar búsqueda en L1 (REQUERIDO)
+## 🎯 Objetivos de Aprendizaje
 
-**Ubicación**: MultiLevelCache.get(), línea ~106
-
-**Estado**: ✅ **YA IMPLEMENTADO** como ejemplo
-
-```python
-def get(self, key: str) -> Optional[Dict]:
-    # L1: Búsqueda exacta en memoria (5ms)
-    if key in self.l1_cache:
-        self.l1_access_count[key] = self.l1_access_count.get(key, 0) + 1
-        logger.info(f"✅ Cache L1 HIT: {key[:10]}")
-        return self.l1_cache[key]
-```
-
-**Explicación**: Este TODO ya está completo como ejemplo para que los participantes vean cómo funciona el patrón antes de implementar L2 y L3.
+1. ✅ **Crear** API FastAPI completa para RAG
+2. ✅ **Implementar** streaming de respuestas (Server-Sent Events)
+3. ✅ **Añadir** autenticación Bearer token
+4. ✅ **Configurar** rate limiting por usuario
+5. ✅ **Implementar** logging estructurado (Loguru)
+6. ✅ **Crear** Docker container
+7. ✅ **Deployer** a cloud (Railway/Render)
+8. ✅ **Alcanzar** 500ms de latencia con optimizaciones enterprise
 
 ---
 
-### TODO 4: Implementar búsqueda en Redis (RECOMENDADO)
+## 📊 Métricas Target (Sistema en Producción)
 
-**Ubicación**: MultiLevelCache.get(), línea ~117
-
-**Estado**: ✅ **YA IMPLEMENTADO** con fallback automático
-
-```python
-# L2: Redis (10ms) - Solo si está disponible
-if self.redis_available:
-    try:
-        cached_value = self.redis_client.get(key)
-        if cached_value:
-            result = json.loads(cached_value)
-            # Promocionar a L1
-            self.set_l1(key, result)
-            logger.info(f"✅ Cache L2 HIT: {key[:10]}")
-            return result
-    except Exception as e:
-        logger.warning(f"Redis error: {e}")
-```
-
-**Explicación**: Implementado con try-except para que funcione sin Redis instalado.
+| Métrica | Módulo 3 | Módulo 4 (Target) | Mejora |
+|---------|----------|-------------------|---------|
+| ⏱️ Latencia | 800ms | 500ms | -37% |
+| 💰 Costo | $0.006 | $0.004 | -33% |
+| 🎯 Accuracy | 85% | 90% | +6% |
+| 🔒 Seguridad | Básica | Producción | +++ |
+| 📊 Observabilidad | No | Completa | +++ |
 
 ---
 
-### TODO 5: Implementar búsqueda semántica (OPCIONAL - AVANZADO)
+## 🗓️ Timeline Detallado
 
-**Ubicación**: MultiLevelCache.get(), línea ~134
-
-**Solución Completa**:
-```python
-# L3: Semantic similarity (50ms)
-def get(self, key: str) -> Optional[Dict]:
-    # ... código L1 y L2 ...
-
-    # L3: Semantic similarity
-    if hasattr(self, 'embedder'):
-        try:
-            # Generar embedding de la query
-            query_embedding = self.embedder.embed(key)
-
-            # Buscar en cache semántico
-            best_match = None
-            best_similarity = 0.95  # Threshold alto
-
-            for cached_key, cached_data in self.semantic_cache.items():
-                cached_embedding = cached_data.get('embedding')
-                if cached_embedding:
-                    # Calcular similaridad coseno
-                    similarity = self._cosine_similarity(
-                        query_embedding,
-                        cached_embedding
-                    )
-
-                    if similarity > best_similarity:
-                        best_similarity = similarity
-                        best_match = cached_data.get('result')
-
-            if best_match:
-                logger.info(f"✅ Cache L3 HIT (similarity: {best_similarity:.2f})")
-                # Promocionar a L1 y L2
-                self.set(key, best_match)
-                return best_match
-
-        except Exception as e:
-            logger.warning(f"Semantic cache error: {e}")
-
-    logger.info(f"❌ Cache MISS: {key[:10]}")
-    return None
-
-def _cosine_similarity(self, vec1, vec2):
-    """Calcular similaridad coseno entre dos vectores"""
-    import numpy as np
-    dot_product = np.dot(vec1, vec2)
-    norm1 = np.linalg.norm(vec1)
-    norm2 = np.linalg.norm(vec2)
-    return dot_product / (norm1 * norm2)
-```
-
-**Nota**: Este es avanzado y requiere embedder configurado. Opcional para workshop.
+| Tiempo | Sección | Actividad | TODOs |
+|--------|---------|-----------|-------|
+| 15:30-15:45 | Parte 1: FastAPI Base | Endpoints básicos | 1-3 |
+| 15:45-16:00 | Parte 2: Features | Streaming, Auth, Rate Limit | 4-6 |
+| 16:00-16:15 | Parte 3: Observabilidad | Logging, Monitoring, Health | 7-9 |
+| 16:15-16:30 | Parte 4: Containerización | Docker, Docker Compose | 10-11 |
+| 16:30-16:45 | Parte 5: Deployment | Deploy y testing | 12 |
 
 ---
 
-### TODO 6: Implementar guardado en L1 (REQUERIDO)
+## 📝 Guión de la Sesión
 
-**Ubicación**: MultiLevelCache.set(), línea ~146
+### PARTE 1: FastAPI Base [15:30-15:45] - 15 min
 
-**Estado**: ✅ **YA IMPLEMENTADO**
+#### 1. Introducción a Producción (3 min)
 
-```python
-def set(self, key: str, value: Dict):
-    # Guardar en L1
-    self.set_l1(key, value)
+**Instructor presenta:**
+
+> "Hasta ahora todo ha sido en notebooks. Ahora vamos a convertirlo en una API de producción lista para recibir millones de requests. FastAPI es el framework más rápido de Python y perfecto para RAG."
+
+**Conceptos clave de producción:**
+- **API REST:** Endpoints HTTP para acceso programático
+- **Async:** Manejo de múltiples requests simultáneos
+- **Streaming:** Respuestas en tiempo real
+- **Autenticación:** Solo usuarios autorizados
+- **Rate Limiting:** Prevenir abuso
+- **Logging:** Trazabilidad de errores
+- **Monitoring:** Métricas en tiempo real
+- **Docker:** Containerización para deploy
+- **CI/CD:** Automatización de deployment
+
+#### 2. Estructura del Proyecto (2 min)
+
+**Mostrar estructura:**
+```
+src/
+├── main.py              # FastAPI app
+├── module_4_production.py  # RAG optimizado
+├── auth.py              # Autenticación
+├── rate_limiter.py      # Rate limiting
+└── monitoring.py        # Métricas
 ```
 
-**Explicación**: Delega a `set_l1()` que implementa política LRU.
+#### 3. FastAPI Hello World (5 min)
+
+**Ejecutar primer endpoint:**
+
+```python
+from fastapi import FastAPI
+
+app = FastAPI(title="RAG Production API")
+
+@app.get("/")
+def root():
+    return {"message": "RAG API Running", "version": "1.0.0"}
+```
+
+**Iniciar servidor:**
+```bash
+uvicorn main:app --reload
+```
+
+**Mostrar en navegador:** http://localhost:8000
+**Mostrar docs automáticas:** http://localhost:8000/docs
+
+**💡 Destacar:**
+> "FastAPI genera documentación interactiva automáticamente. Esto es oro para APIs."
+
+#### 4. TODO 1: Endpoint de Health Check (5 min)
+
+**Instructor guía implementación:**
+
+```python
+@app.get("/health")
+async def health_check():
+    """Health check para kubernetes/docker"""
+    return {
+        "status": "healthy",
+        "timestamp": datetime.now().isoformat(),
+        "uptime_seconds": time.time() - start_time,
+        "checks": {
+            "api": "ok",
+            "database": "ok",  # Verificar ChromaDB
+            "openai": "ok"     # Verificar API key
+        }
+    }
+```
+
+**Por qué es importante:**
+- Kubernetes usa /health para saber si reiniciar container
+- Monitoreo puede alertar si algo falla
+- Debug rápido de problemas
 
 ---
 
-### TODO 7: Implementar guardado en Redis (RECOMENDADO)
+### PARTE 2: Features de Producción [15:45-16:00] - 15 min
 
-**Ubicación**: MultiLevelCache.set(), línea ~149
+#### 5. TODO 2-3: Endpoints de Indexación y Query (7 min)
 
-**Estado**: ✅ **YA IMPLEMENTADO**
-
+**Endpoint de indexación:**
 ```python
-# Guardar en Redis con TTL
-if self.redis_available:
-    try:
-        self.redis_client.set(
-            key,
-            json.dumps(value, default=str),
-            ex=3600  # TTL 1 hora
-        )
-    except Exception as e:
-        logger.warning(f"Redis set error: {e}")
+@app.post("/index")
+async def index_documents(files: List[UploadFile]):
+    """Indexar documentos nuevos"""
+    # Procesar archivos subidos
+    for file in files:
+        content = await file.read()
+        # Indexar en RAG
+    return {"indexed": len(files), "status": "success"}
 ```
 
----
-
-### TODO 8: Implementar rate limiting (RECOMENDADO)
-
-**Ubicación**: RateLimiter.check_rate_limit(), línea ~176
-
-**Estado**: ✅ **YA IMPLEMENTADO** con sliding window
-
+**Endpoint de query:**
 ```python
-def check_rate_limit(self, user_id: str) -> bool:
-    """Verificar si usuario excede límite (sliding window)"""
-    current_time = time.time()
-
-    # Inicializar si es nuevo usuario
-    if user_id not in self.requests:
-        self.requests[user_id] = []
-
-    # Filtrar requests del último minuto
-    minute_ago = current_time - 60
-    self.requests[user_id] = [
-        ts for ts in self.requests[user_id]
-        if ts > minute_ago
-    ]
-
-    # Verificar límite
-    if len(self.requests[user_id]) >= self.requests_per_minute:
-        logger.warning(f"❌ Rate limit exceeded for {user_id}")
-        return False
-
-    # Añadir request actual
-    self.requests[user_id].append(current_time)
-    return True
+@app.post("/query")
+async def query_rag(request: QueryRequest):
+    """Query al RAG"""
+    result = rag_system.query(request.question)
+    return {
+        "answer": result['response'],
+        "sources": result['sources'],
+        "metrics": result['metrics']
+    }
 ```
 
-**Algoritmo**: Sliding window - mantiene timestamps de requests y filtra los del último minuto.
+#### 6. TODO 4: Streaming con Server-Sent Events (8 min) ⭐ **FEATURE CRÍTICA**
 
----
+**Instructor explica:**
+> "Streaming permite mostrar la respuesta mientras se genera, como ChatGPT. Mejora UX dramáticamente."
 
-### TODO 9: Implementar registro de métricas (REQUERIDO)
-
-**Ubicación**: MetricsCollector.record_request(), línea ~204
-
-**Estado**: ✅ **YA IMPLEMENTADO**
-
+**Implementación:**
 ```python
-def record_request(self, latency: float, cache_hit: bool):
-    """Registrar métricas de request"""
-    self.metrics["total_requests"] += 1
-    self.metrics["total_latency"] += latency
+from fastapi.responses import StreamingResponse
 
-    if cache_hit:
-        self.metrics["cache_hits"] += 1
-    else:
-        self.metrics["cache_misses"] += 1
+@app.post("/query/stream")
+async def query_stream(request: QueryRequest):
+    """Query con streaming"""
+    async def generate():
+        # Yield chunks a medida que se generan
+        for chunk in rag_system.query_stream(request.question):
+            yield f"data: {json.dumps(chunk)}\n\n"
 
-    # Calcular promedio
-    if self.metrics["total_requests"] > 0:
-        self.metrics["avg_latency"] = (
-            self.metrics["total_latency"] / self.metrics["total_requests"]
-        )
-```
-
----
-
-### TODO 10: Inicializar sistema RAG (REQUERIDO)
-
-**Ubicación**: get_rag_system(), línea ~231
-
-**Solución - Opción A (LangChain)**:
-```python
-@lru_cache()
-def get_rag_system():
-    """Singleton del sistema RAG"""
-    logger.info("🔧 Inicializando sistema RAG...")
-
-    from module_3_advanced import Module3_AdvancedRAG
-
-    rag = Module3_AdvancedRAG()
-
-    # Cargar e indexar documento
-    doc = rag.load_document("../data/company_handbook.pdf")
-    chunks = rag.create_chunks(doc)
-    rag.index_chunks(chunks)
-
-    logger.info("✅ RAG system initialized")
-    return rag
-```
-
-**Solución - Opción B (Módulo 2)**:
-```python
-@lru_cache()
-def get_rag_system():
-    """Singleton del sistema RAG"""
-    from module_2_optimized import Module2_OptimizedRAG
-
-    rag = Module2_OptimizedRAG()
-
-    # Setup inicial
-    doc = rag.load_document("../data/company_handbook.pdf")
-    chunks = rag.create_chunks(doc, chunk_size=1000, chunk_overlap=200)
-    rag.index_chunks(chunks)
-
-    return rag
-```
-
-**Solución - Opción C (LlamaIndex)**:
-```python
-@lru_cache()
-def get_rag_system():
-    """Singleton del sistema RAG con LlamaIndex"""
-    from llama_index import VectorStoreIndex, SimpleDirectoryReader
-    from llama_index.llms import OpenAI
-
-    # Cargar documentos
-    documents = SimpleDirectoryReader('../data').load_data()
-
-    # Crear índice
-    index = VectorStoreIndex.from_documents(documents)
-
-    # Query engine
-    query_engine = index.as_query_engine(
-        llm=OpenAI(temperature=0.3),
-        similarity_top_k=3
+    return StreamingResponse(
+        generate(),
+        media_type="text/event-stream"
     )
-
-    # Wrapper para compatibilidad
-    class RAGWrapper:
-        def __init__(self, engine):
-            self.engine = engine
-
-        def query(self, question):
-            response = self.engine.query(question)
-            return {
-                "answer": str(response),
-                "sources": [{"text": node.text, "score": node.score}
-                           for node in response.source_nodes],
-                "latency_ms": 0  # LlamaIndex no trackea esto por defecto
-            }
-
-    return RAGWrapper(query_engine)
 ```
+
+**Demo en vivo:**
+- Mostrar query normal (espera 2 segundos, devuelve todo)
+- Mostrar query streaming (respuesta aparece inmediatamente, palabra por palabra)
+
+**💡 Impacto UX:**
+> "Latencia percibida baja de 2000ms a ~200ms. El usuario ve resultados instantáneamente."
 
 ---
 
-### TODO 11: Añadir autenticación (RECOMENDADO)
+### PARTE 3: Seguridad y Observabilidad [16:00-16:15] - 15 min
 
-**Ubicación**: /cache endpoint, línea ~333
+#### 7. TODO 5-6: Autenticación y Rate Limiting (7 min)
 
-**Solución**:
+**Autenticación Bearer Token:**
 ```python
-from fastapi.security import APIKeyHeader
-from fastapi import Security
+from fastapi import Depends, HTTPException, Header
 
-# Configurar API Key
-API_KEY = "your-secret-api-key-here"  # En producción: usar env var
-api_key_header = APIKeyHeader(name="X-API-Key", auto_error=False)
+async def verify_token(authorization: str = Header(...)):
+    """Verificar API key del usuario"""
+    if not authorization.startswith("Bearer "):
+        raise HTTPException(401, "Invalid token format")
 
-async def verify_api_key(api_key: str = Security(api_key_header)):
-    """Verificar API key"""
-    if api_key != API_KEY:
-        raise HTTPException(
-            status_code=403,
-            detail="Invalid or missing API Key"
-        )
-    return api_key
+    token = authorization.split(" ")[1]
 
-@app.delete("/cache")
-async def clear_cache(api_key: str = Depends(verify_api_key)):
-    """Limpiar cache (requiere autenticación)"""
+    if token not in valid_tokens:
+        raise HTTPException(403, "Invalid API key")
 
-    cache.l1_cache.clear()
-    cache.l1_access_count.clear()
+    return token
 
-    if cache.redis_available:
-        try:
-            cache.redis_client.flushdb()
-        except:
-            pass
-
-    logger.info("🗑️  Cache limpiado")
-    return {"status": "cache cleared", "timestamp": datetime.now()}
+@app.post("/query", dependencies=[Depends(verify_token)])
+async def query_rag(request: QueryRequest):
+    # Solo accesible con token válido
+    ...
 ```
 
-**Uso**:
-```bash
-# Con autenticación
-curl -X DELETE http://localhost:8000/cache \
-  -H "X-API-Key: your-secret-api-key-here"
+**Rate Limiting:**
+```python
+from slowapi import Limiter
+from slowapi.util import get_remote_address
+
+limiter = Limiter(key_func=get_remote_address)
+
+@app.post("/query")
+@limiter.limit("10/minute")  # Max 10 queries por minuto
+async def query_rag(request: QueryRequest):
+    ...
 ```
 
----
+**Por qué importa:**
+- Prevenir abuso de API
+- Proteger costos (cada query cuesta $)
+- Cumplir con SLAs
 
-### TODO 12: Guardar métricas finales (OPCIONAL)
+#### 8. TODO 7-8: Logging y Monitoring (8 min)
 
-**Ubicación**: shutdown_event(), línea ~350
-
-**Solución**:
+**Logging estructurado con Loguru:**
 ```python
-import json
-from pathlib import Path
+from loguru import logger
 
-@app.on_event("shutdown")
-async def shutdown_event():
-    """Limpieza al apagar"""
-    logger.info("👋 Shutting down RAG API...")
+logger.add(
+    "logs/rag_api_{time}.log",
+    rotation="100 MB",
+    retention="30 days",
+    level="INFO",
+    format="{time:YYYY-MM-DD HH:mm:ss} | {level} | {message}"
+)
 
-    # TODO 12 - Solución
-    final_metrics = metrics.get_metrics()
+@app.post("/query")
+async def query_rag(request: QueryRequest):
+    logger.info(f"Query received: {request.question[:50]}...")
 
-    # Guardar en archivo
-    metrics_dir = Path("logs/metrics")
-    metrics_dir.mkdir(parents=True, exist_ok=True)
-
-    metrics_file = metrics_dir / f"metrics_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
-
-    with open(metrics_file, 'w') as f:
-        json.dump({
-            "shutdown_time": datetime.now().isoformat(),
-            "metrics": final_metrics,
-            "uptime_seconds": time.time() - startup_time  # Requiere global startup_time
-        }, f, indent=2)
-
-    logger.info(f"📊 Métricas guardadas en: {metrics_file}")
-
-    # Opcional: Enviar a sistema de monitoring
     try:
-        # Ejemplo con webhook
-        import requests
-        requests.post(
-            "https://your-monitoring-service.com/metrics",
-            json=final_metrics,
-            timeout=5
-        )
-    except:
-        pass
+        result = rag_system.query(request.question)
+        logger.info(f"Query successful: {result['metrics']['latency']}ms")
+        return result
+    except Exception as e:
+        logger.error(f"Query failed: {str(e)}")
+        raise
 ```
 
-**Para trackear uptime, añade al startup**:
+**Monitoring con Prometheus:**
 ```python
-startup_time = None
+from prometheus_client import Counter, Histogram
 
-@app.on_event("startup")
-async def startup_event():
-    global startup_time
-    startup_time = time.time()
-    logger.info("🚀 Starting RAG API...")
-    get_rag_system()
-    logger.info("✅ RAG API ready!")
+# Métricas
+query_counter = Counter('rag_queries_total', 'Total queries')
+query_latency = Histogram('rag_query_latency_seconds', 'Query latency')
+
+@app.post("/query")
+async def query_rag(request: QueryRequest):
+    query_counter.inc()
+
+    with query_latency.time():
+        result = rag_system.query(request.question)
+
+    return result
 ```
 
----
-
-## 📊 Resumen de TODOs
-
-| TODO | Estado | Dificultad | Prioridad |
-|------|--------|------------|-----------|
-| 1. Validación adicional | Opcional | Baja | Baja |
-| 2. Campos response | Opcional | Baja | Media |
-| 3. Búsqueda L1 | ✅ Implementado | Baja | Alta |
-| 4. Búsqueda Redis | ✅ Implementado | Media | Alta |
-| 5. Búsqueda semántica | Pendiente | Alta | Baja |
-| 6. Guardado L1 | ✅ Implementado | Baja | Alta |
-| 7. Guardado Redis | ✅ Implementado | Media | Alta |
-| 8. Rate limiting | ✅ Implementado | Media | Alta |
-| 9. Métricas | ✅ Implementado | Baja | Alta |
-| 10. Init RAG | Pendiente | Media | **CRÍTICA** |
-| 11. Autenticación | Pendiente | Media | Alta |
-| 12. Guardar métricas | Opcional | Baja | Baja |
-
-**Para completar el workshop mínimo**:
-- TODO 10 (Inicializar RAG) - **OBLIGATORIO**
-- TODOs 3, 4, 6, 7, 8, 9 - **Ya implementados como ejemplos**
-
-**Para producción real**:
-- TODO 11 (Autenticación) - **Muy recomendado**
-- TODO 1, 2 (Validaciones) - Recomendado
-- TODO 5 (Semantic cache) - Avanzado, opcional
-- TODO 12 (Guardar métricas) - Nice to have
+**Dashboard de métricas:**
+- Queries por segundo
+- Latencia p50, p95, p99
+- Error rate
+- Costo acumulado
 
 ---
 
-## 🚀 Testing Completo
+### PARTE 4: Containerización [16:15-16:30] - 15 min
 
-Una vez completados los TODOs, verificar:
+#### 9. TODO 10: Dockerfile (7 min)
 
+**Instructor crea Dockerfile en vivo:**
+
+```dockerfile
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# Instalar dependencias
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copiar código
+COPY src/ ./src/
+COPY data/ ./data/
+
+# Exponer puerto
+EXPOSE 8000
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s \
+  CMD curl -f http://localhost:8000/health || exit 1
+
+# Comando de inicio
+CMD ["uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8000"]
+```
+
+**Build y run:**
 ```bash
-# 1. Iniciar API
-python src/module_4_api.py
+# Build
+docker build -t rag-api:latest .
 
-# 2. Test health
-curl http://localhost:8000/
-
-# 3. Test query sin cache
-curl -X POST http://localhost:8000/query \
-  -H "Content-Type: application/json" \
-  -d '{"question": "¿Política de vacaciones?", "use_cache": false}'
-
-# 4. Test query con cache (mismo query)
-curl -X POST http://localhost:8000/query \
-  -H "Content-Type: application/json" \
-  -d '{"question": "¿Política de vacaciones?", "use_cache": true}'
-
-# 5. Ver métricas
-curl http://localhost:8000/metrics
-
-# 6. Limpiar cache (si implementaste autenticación)
-curl -X DELETE http://localhost:8000/cache \
-  -H "X-API-Key: your-key-here"
+# Run
+docker run -p 8000:8000 \
+  -e OPENAI_API_KEY=$OPENAI_API_KEY \
+  rag-api:latest
 ```
 
-**Resultados esperados**:
-- Primera query: ~500-1000ms (sin cache)
-- Segunda query: ~5ms (L1 cache hit)
-- Cache hit rate: >50% después de varias queries
+**Test:**
+```bash
+curl http://localhost:8000/health
+```
+
+#### 10. TODO 11: Docker Compose (8 min)
+
+**Para apps con múltiples servicios:**
+
+```yaml
+version: '3.8'
+
+services:
+  api:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+    depends_on:
+      - redis
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+  prometheus:
+    image: prom/prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+
+volumes:
+  redis_data:
+```
+
+**Iniciar todo:**
+```bash
+docker-compose up -d
+```
 
 ---
 
-## ✅ Checklist de Completitud
+### PARTE 5: Deployment [16:30-16:45] - 15 min
 
-- [ ] API arranca sin errores
-- [ ] Endpoint /query funciona
-- [ ] L1 cache funcional (5ms)
-- [ ] Redis funciona (o fallback activo)
-- [ ] Rate limiting protege contra abuso
-- [ ] Métricas se registran correctamente
-- [ ] Logs son informativos
-- [ ] Docker build exitoso
-- [ ] Docker-compose levanta todos los servicios
+#### 11. TODO 12: Deploy a Cloud (10 min)
 
-**🎉 Módulo 4 completo cuando todos los checks pasan!**
+**Opciones de deployment:**
+
+**Opción A: Railway (Más simple)**
+```bash
+# 1. Install CLI
+npm install -g @railway/cli
+
+# 2. Login
+railway login
+
+# 3. Deploy
+railway init
+railway up
+```
+
+**Opción B: Render (Free tier)**
+- Conectar repo GitHub
+- Auto-deploy en cada push
+- HTTPS gratis
+
+**Opción C: Google Cloud Run (Escalable)**
+```bash
+gcloud run deploy rag-api \
+  --source . \
+  --region us-central1 \
+  --allow-unauthenticated
+```
+
+**Demo de deployment:**
+1. Mostrar Railway dashboard
+2. Hacer deploy
+3. Obtener URL pública
+4. Testear desde Postman
+
+#### 12. Testing de API en Producción (5 min)
+
+**Test script:**
+```python
+import requests
+
+API_URL = "https://rag-api-xxx.railway.app"
+API_KEY = "Bearer your-key-here"
+
+# Test health
+response = requests.get(f"{API_URL}/health")
+print(f"Health: {response.json()}")
+
+# Test query
+response = requests.post(
+    f"{API_URL}/query",
+    headers={"Authorization": API_KEY},
+    json={"question": "¿Cuál es la política de vacaciones?"}
+)
+print(f"Answer: {response.json()['answer']}")
+```
+
+**Load testing (opcional):**
+```bash
+# Usando hey
+hey -n 1000 -c 10 -m POST \
+  -H "Authorization: Bearer $API_KEY" \
+  -d '{"question":"test"}' \
+  $API_URL/query
+```
+
+---
+
+## 🎉 Resumen del Módulo
+
+### ✅ Lo que construyeron:
+
+1. **API FastAPI** con endpoints de producción
+2. **Streaming** de respuestas en tiempo real
+3. **Autenticación** Bearer token
+4. **Rate limiting** para prevenir abuso
+5. **Logging** estructurado con Loguru
+6. **Monitoring** con Prometheus
+7. **Docker** containerizado
+8. **Deployed** a cloud (Railway/Render)
+
+### 📊 Métricas Finales:
+
+| Métrica | Inicio (M1) | Final (M4) | Mejora Total |
+|---------|-------------|------------|--------------|
+| Latencia | 2000ms | 500ms | **-75%** |
+| Costo | $0.010 | $0.004 | **-60%** |
+| Accuracy | 70% | 90% | **+29%** |
+| Prod-Ready | No | Sí | **✅** |
+
+### 🚀 Sistema Listo para Producción:
+
+✅ API REST escalable
+✅ Streaming para UX mejorado
+✅ Seguridad enterprise
+✅ Observabilidad completa
+✅ Containerizado
+✅ Deployed a cloud
+
+---
+
+## 📊 Métricas de Éxito del Módulo
+
+- [ ] **90%+** tienen API FastAPI corriendo localmente
+- [ ] **80%+** implementaron streaming exitosamente
+- [ ] **75%+** añadieron autenticación y rate limiting
+- [ ] **70%+** crearon Docker container
+- [ ] **50%+** hicieron deployment a cloud
+
+---
+
+## 🚨 Troubleshooting
+
+### Docker build falla
+```bash
+# Ver logs detallados
+docker build --progress=plain -t rag-api .
+
+# Limpiar cache
+docker system prune -a
+```
+
+### Railway deployment falla
+- Verificar Procfile existe
+- Verificar requirements.txt completo
+- Checar variables de entorno
+
+### Streaming no funciona
+- Usar `yield` no `return`
+- Content-Type: `text/event-stream`
+- Flush cada chunk
+
+---
+
+## ✅ Checklist del Instructor
+
+**Antes:**
+- [ ] Probar API localmente
+- [ ] Test Docker build
+- [ ] Verificar cuenta Railway/Render
+- [ ] Preparar API keys de demo
+
+**Durante:**
+- [ ] Demo streaming en vivo
+- [ ] Mostrar logs en tiempo real
+- [ ] Test de carga opcional
+- [ ] Deploy a cloud en vivo
+
+**Después:**
+- [ ] Verificar deployments exitosos
+- [ ] Compartir URLs de APIs deployed
+- [ ] Recopilar feedback
+
+---
+
+**🎉 ¡Tienen un RAG de producción enterprise-grade!**

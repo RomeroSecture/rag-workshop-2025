@@ -1,647 +1,597 @@
-# Soluciones Proyecto Final (Notebook 05) - NIVEL 2 WORKSHOP
-
-## 📋 Estructura del Módulo 5
-
-El notebook 05 es el proyecto final donde los participantes:
-1. Eligen un caso de uso (Support, Technical Docs, Business Intelligence, o custom)
-2. Personalizan la clase base `MyCustomRAG`
-3. Implementan features específicas de su dominio
-4. Prueban y presentan su sistema
-
-## ✅ Estado Actual (Post-Corrección)
-
-### Cambios Realizados:
-1. ✅ **Transformado de template vacío a clase base funcional**
-2. ✅ **Hereda de Module2_OptimizedRAG** (toda la funcionalidad básica incluida)
-3. ✅ **Métodos funcionales** con TODOs claramente marcados
-4. ✅ **Ejemplos de uso** para diferentes tipos de datos
-5. ✅ **Sistema de testing** con hints por dominio
-
-### Filosofía del Módulo 5:
-- **90% autonomía**: Los participantes deciden qué construir
-- **Base funcional**: La clase padre ya funciona, solo personalizan
-- **TODOs opcionales**: Cada método tiene implementación básica + TODOs para mejorar
-- **Flexibilidad total**: Pueden elegir qué métodos extender
-
-## 🎯 Casos de Uso Propuestos
-
-### Opción A: Customer Support Bot
-**Objetivo**: Responder queries de soporte automáticamente
-
-**Datos sugeridos**:
-- FAQs (JSON)
-- Tickets históricos (CSV)
-- Knowledge base (PDF)
-
-**Features especiales**:
-- Auto-escalación a humano si confidence < 70%
-- Categorización automática de tickets
-- Historial de conversación
-
-**Métricas clave**:
-- Tiempo de primera respuesta
-- % de resolución automática
-- Satisfacción del cliente
+# 🎓 Guía del Instructor - Notebook 05: Proyecto Final
+## Aplica Todo lo Aprendido a Tu Caso de Uso
 
 ---
 
-### Opción B: Technical Documentation Assistant
-**Objetivo**: Ayudar a developers con documentación técnica
+## 📋 Información General
 
-**Datos sugeridos**:
-- API docs (Markdown)
-- Code samples (archivos .py, .js)
-- READMEs (Markdown)
+**Duración:** 60 minutos (16:45-17:45)
+- **Planificación:** 10 min (16:45-16:55)
+- **Desarrollo:** 35 min (16:55-17:30)
+- **Presentaciones:** 15 min (17:30-17:45)
 
-**Features especiales**:
-- Generación de código
-- Versionado de docs
-- Detección de deprecated APIs
-
-**Métricas clave**:
-- Precisión técnica
-- Código generado funcional
-- Coverage de API
+**Objetivo:** Construir un RAG completo end-to-end con caso de uso propio
+**Nivel:** Síntesis - Aplicación práctica
+**Pre-requisitos:** Módulos 1-4 completados
 
 ---
 
-### Opción B: Business Intelligence RAG
-**Objetivo**: Insights de negocio desde datos
+## 🎯 Objetivos de Aprendizaje
 
-**Datos sugeridos**:
-- Reports (PDF)
-- KPIs (CSV)
-- Dashboard exports (JSON)
-
-**Features especiales**:
-- Visualizaciones automáticas
-- Detección de tendencias
-- Alertas de anomalías
-
-**Métricas clave**:
-- Insights accionables
-- Precisión de predicciones
-- Tiempo de análisis
+1. ✅ **Aplicar** todos los conceptos del workshop a caso real
+2. ✅ **Diseñar** arquitectura end-to-end
+3. ✅ **Implementar** solución funcional
+4. ✅ **Presentar** al grupo (3 min)
+5. ✅ **Recibir** feedback constructivo
+6. ✅ **Planear** siguientes pasos post-workshop
 
 ---
 
-### Opción D: Custom (Tu idea)
-**Objetivo**: Lo que necesites
+## 🗓️ Timeline Detallado
 
-**Ejemplos reales**:
-- Legal document search
-- Medical literature review
-- E-commerce product recommendations
-- HR policy assistant
-- Sales enablement tool
+| Tiempo | Fase | Actividad | Output |
+|--------|------|-----------|--------|
+| 16:45-16:50 | Ideación | Elegir caso de uso | Descripción clara |
+| 16:50-16:55 | Diseño | Arquitectura en papel | Diagrama simple |
+| 16:55-17:05 | Desarrollo 1 | Indexación y setup | Datos cargados |
+| 17:05-17:15 | Desarrollo 2 | RAG core funcionando | Primera query OK |
+| 17:15-17:30 | Desarrollo 3 | Features adicionales | Proyecto pulido |
+| 17:30-17:45 | Presentaciones | 3 min por persona | Demos al grupo |
 
 ---
 
-## 💻 Implementación Completa: Ejemplo "Customer Support Bot"
+## 📝 Guión de la Sesión
 
-```python
-# ============= CUSTOMER SUPPORT BOT =============
+### PARTE 1: Planificación [16:45-16:55] - 10 min
 
-import sys
-from pathlib import Path
-sys.path.append(str(Path.cwd().parent / 'src'))
+#### 1. Introducción al Proyecto Final (2 min)
 
-from module_2_optimized import Module2_OptimizedRAG
-import json
-import pandas as pd
-import time
+**Instructor presenta:**
 
-class CustomerSupportRAG(Module2_OptimizedRAG):
-    """
-    Sistema RAG especializado en soporte al cliente
+> "¡Llegamos al momento final! Van a crear un RAG para un problema real que quieran resolver. Puede ser de su trabajo, un side project, o algo personal. Tienen 60 minutos. No tiene que ser perfecto - tiene que funcionar."
 
-    Features:
-    - Auto-escalación basada en confianza
-    - Categorización de tickets
-    - Historial de conversación
-    - Métricas de satisfacción
-    """
+**Reglas del juego:**
+- ✅ Usar módulos 1-4 como base
+- ✅ Elegir caso de uso real
+- ✅ Funcionalidad básica mínimo
+- ✅ Presentación de 3 minutos
+- ❌ No gastar más de 35 min desarrollando
 
-    def __init__(self):
-        super().__init__()
-        self.name = "Customer Support Bot"
-        self.version = "1.0.0"
+#### 2. Elección de Caso de Uso (5 min)
 
-        # Config específica de soporte
-        self.config = {
-            "domain": "customer_support",
-            "language": "es",
-            "tone": "friendly_professional",
-            "escalation_threshold": 0.7,
-            "max_context_tickets": 5
-        }
+**Instructor guía brainstorming:**
 
-        # Componentes especiales
-        self.ticket_categories = [
-            "account", "billing", "technical",
-            "shipping", "product", "other"
-        ]
-        self.conversation_history = []
-        self.escalated_queries = []
+**Ideas de proyectos (por categoría):**
 
-        print(f"✅ {self.name} v{self.version} inicializado")
-        print(f"   Umbral de escalación: {self.config['escalation_threshold']}")
+**Empresa/Trabajo:**
+- Sistema de búsqueda en documentación interna
+- Asistente para onboarding de nuevos empleados
+- RAG sobre contratos y policies
+- Chatbot de soporte técnico
 
-    def load_support_data(self):
-        """Cargar datos de soporte (FAQs + tickets)"""
-        print("📥 Cargando datos de soporte...")
+**Personal/Educativo:**
+- Asistente de estudio sobre tus apuntes
+- RAG sobre libros que has leído
+- Sistema de recetas de cocina
+- Asistente de viajes con tus itinerarios
 
-        # 1. Cargar FAQs desde JSON
-        faqs_path = "../data/faqs.json"
-        with open(faqs_path) as f:
-            faqs = json.load(f)
+**Técnico:**
+- Búsqueda en código legacy
+- Documentación de APIs
+- Troubleshooting knowledge base
+- Stack Overflow personal
 
-        # Convertir FAQs a texto para indexar
-        faq_texts = []
-        for faq in faqs:
-            text = f"Q: {faq['question']}\nA: {faq['answer']}\nCategoría: {faq['category']}"
-            faq_texts.append(text)
+**Creativo:**
+- Generador de historias basado en tu estilo
+- Asistente de escritura
+- RAG sobre tu blog
 
-        print(f"   ✅ {len(faq_texts)} FAQs cargadas")
+**Ayudar a elegir con preguntas:**
+1. "¿Qué problema real resuelve?"
+2. "¿Tienes datos para indexar?"
+3. "¿Es viable en 35 minutos?"
 
-        # 2. Cargar tickets históricos desde CSV
-        tickets_path = "../data/support_tickets.csv"
-        df = pd.read_csv(tickets_path)
-
-        # Convertir tickets a texto
-        ticket_texts = []
-        for _, ticket in df.iterrows():
-            text = f"Ticket #{ticket['ticket_id']}: {ticket['description']}\nResolución: {ticket['resolution']}"
-            ticket_texts.append(text)
-
-        print(f"   ✅ {len(ticket_texts)} tickets históricos cargados")
-
-        # 3. Combinar y crear chunks
-        all_texts = "\n\n---\n\n".join(faq_texts + ticket_texts)
-        chunks = self.create_chunks(all_texts, chunk_size=800, chunk_overlap=150)
-
-        # 4. Indexar
-        self.index_chunks(chunks)
-
-        print(f"   ✅ {len(chunks)} chunks indexados")
-
-        return {
-            "faqs": len(faq_texts),
-            "tickets": len(ticket_texts),
-            "chunks": len(chunks)
-        }
-
-    def categorize_query(self, query: str) -> str:
-        """Categorizar query automáticamente"""
-        query_lower = query.lower()
-
-        # Reglas simples de categorización
-        if any(word in query_lower for word in ['cuenta', 'password', 'login', 'acceso']):
-            return "account"
-        elif any(word in query_lower for word in ['pago', 'factura', 'cobro', 'billing']):
-            return "billing"
-        elif any(word in query_lower for word in ['error', 'bug', 'no funciona', 'técnico']):
-            return "technical"
-        elif any(word in query_lower for word in ['envío', 'entrega', 'shipping']):
-            return "shipping"
-        elif any(word in query_lower for word in ['producto', 'feature', 'funcionalidad']):
-            return "product"
-        else:
-            return "other"
-
-    def calculate_confidence(self, result: dict) -> float:
-        """
-        Calcular score de confianza basado en:
-        - Número de sources
-        - Similaridad de sources
-        - Longitud de respuesta
-        """
-        num_sources = result['metrics'].get('num_sources', 0)
-
-        # Score base por número de sources
-        if num_sources >= 3:
-            confidence = 0.9
-        elif num_sources == 2:
-            confidence = 0.75
-        elif num_sources == 1:
-            confidence = 0.6
-        else:
-            confidence = 0.3
-
-        # Ajustar por longitud de respuesta
-        answer_length = len(result.get('response', ''))
-        if answer_length < 50:
-            confidence *= 0.8
-        elif answer_length > 200:
-            confidence = min(confidence * 1.1, 1.0)
-
-        return round(confidence, 2)
-
-    def support_query(self, question: str, user_id: str = "anonymous"):
-        """
-        Query principal con features de soporte
-        """
-        print(f"\n💬 Support Query de {user_id}")
-        print(f"   Q: {question}")
-
-        start_time = time.time()
-
-        # 1. Categorizar
-        category = self.categorize_query(question)
-        print(f"   📂 Categoría: {category}")
-
-        # 2. Query base
-        result = self.query(question)
-
-        # 3. Calcular confianza
-        confidence = self.calculate_confidence(result)
-        print(f"   🎯 Confianza: {confidence:.0%}")
-
-        # 4. Decidir escalación
-        should_escalate = confidence < self.config['escalation_threshold']
-
-        if should_escalate:
-            print(f"   ⚠️  Escalando a agente humano (confianza < {self.config['escalation_threshold']:.0%})")
-            self.escalated_queries.append({
-                "question": question,
-                "confidence": confidence,
-                "category": category,
-                "timestamp": time.time()
-            })
-
-        # 5. Construir respuesta mejorada
-        enhanced_response = {
-            "answer": result['response'],
-            "category": category,
-            "confidence": confidence,
-            "escalated": should_escalate,
-            "sources": result['metrics']['num_sources'],
-            "latency_ms": (time.time() - start_time) * 1000,
-            "user_id": user_id
-        }
-
-        # 6. Guardar en historial
-        self.conversation_history.append({
-            "user_id": user_id,
-            "question": question,
-            "category": category,
-            "confidence": confidence,
-            "escalated": should_escalate,
-            "timestamp": time.time()
-        })
-
-        return enhanced_response
-
-    def get_support_stats(self):
-        """Estadísticas del sistema de soporte"""
-        total_queries = len(self.conversation_history)
-        escalated = len([q for q in self.conversation_history if q['escalated']])
-
-        if total_queries == 0:
-            return {"message": "No hay queries todavía"}
-
-        # Calcular métricas
-        auto_resolution_rate = ((total_queries - escalated) / total_queries) * 100
-        avg_confidence = sum(q['confidence'] for q in self.conversation_history) / total_queries
-
-        # Por categoría
-        category_counts = {}
-        for q in self.conversation_history:
-            cat = q['category']
-            category_counts[cat] = category_counts.get(cat, 0) + 1
-
-        return {
-            "total_queries": total_queries,
-            "auto_resolved": total_queries - escalated,
-            "escalated": escalated,
-            "auto_resolution_rate": f"{auto_resolution_rate:.1f}%",
-            "avg_confidence": f"{avg_confidence:.0%}",
-            "queries_by_category": category_counts,
-            "top_category": max(category_counts, key=category_counts.get) if category_counts else None
-        }
-
-# ============= DEMO =============
-
-# Crear instancia
-support_bot = CustomerSupportRAG()
-
-# Cargar datos
-stats = support_bot.load_support_data()
-print(f"\n📊 Datos cargados: {stats}")
-
-# Queries de prueba
-test_queries = [
-    ("¿Cómo reseteo mi contraseña?", "user_001"),
-    ("¿Cuándo llega mi pedido?", "user_002"),
-    ("Error al procesar pago", "user_003"),
-    ("¿Qué features tiene el plan premium?", "user_001"),
-]
-
-print("\n" + "="*60)
-print("🧪 TESTING CUSTOMER SUPPORT BOT")
-print("="*60)
-
-for question, user_id in test_queries:
-    result = support_bot.support_query(question, user_id)
-
-    print(f"\n📝 Respuesta:")
-    print(f"   {result['answer'][:150]}...")
-    print(f"   Categoría: {result['category']} | Confianza: {result['confidence']:.0%}")
-    print(f"   Escalado: {'Sí' if result['escalated'] else 'No'} | Latencia: {result['latency_ms']:.0f}ms")
-    print("-"*60)
-    time.sleep(1)
-
-# Mostrar estadísticas
-print("\n📊 ESTADÍSTICAS DEL SISTEMA")
-print("="*60)
-stats = support_bot.get_support_stats()
-for key, value in stats.items():
-    print(f"{key}: {value}")
-
-print("\n✅ Customer Support Bot Demo Completo!")
+**Hacer que escriban en papel:**
+```
+Nombre del proyecto:
+Problema que resuelve:
+Datos que usaré:
+Framework: LangChain / LlamaIndex / Custom
 ```
 
+#### 3. Diseño Rápido de Arquitectura (3 min)
+
+**Instructor da template:**
+
+```
+Mi RAG tendrá:
+
+Datos:
+- [ ] Documentos PDF / TXT / Web
+- [ ] Cantidad aproximada: ___
+
+Chunking:
+- [ ] Tamaño de chunk: ___
+- [ ] Overlap: ___
+
+Framework:
+- [ ] LangChain / LlamaIndex / Custom
+
+Features especiales:
+- [ ] Memoria conversacional
+- [ ] Agents con tools
+- [ ] Re-ranking
+- [ ] Metadata filtering
+- [ ] Streaming
+- [ ] API
+
+Deploy:
+- [ ] Local
+- [ ] Docker
+- [ ] Cloud
+```
+
+**No necesitan implementar todo - priorizar lo básico.**
+
 ---
 
-## 💻 Implementación Completa: Ejemplo "Technical Docs Assistant"
+### PARTE 2: Desarrollo [16:55-17:30] - 35 min
 
+**Instructor anuncia:**
+> "Tienen 35 minutos. Go! Estaré circulando para ayudar."
+
+#### 4. Estrategia de Timing (Compartir antes de empezar)
+
+**Cronograma sugerido:**
+
+**Minutos 0-10: Setup e Indexación**
+- Cargar documentos
+- Crear chunks
+- Indexar en vectorstore
+- **Checkpoint:** `print("Chunks indexados:", len(chunks))`
+
+**Minutos 10-20: RAG Core**
+- Implementar query básica
+- Primera prueba exitosa
+- **Checkpoint:** Una query funciona
+
+**Minutos 20-30: Features**
+- Añadir 1-2 features de módulos anteriores
+- Mejorar prompts
+- Optimizar parámetros
+
+**Minutos 30-35: Pulir y Preparar Demo**
+- Probar 2-3 queries variadas
+- Anotar métricas
+- Preparar qué mostrar
+
+#### 5. Roles del Instructor (Durante desarrollo)
+
+**Circular por la sala:**
+- Ayudar a desbloquear
+- Responder preguntas técnicas
+- Revisar código rápidamente
+- Motivar a los que van atrasados
+
+**Avisos de tiempo:**
+- **17:05 (10 min):** "Deberían tener datos indexados"
+- **17:15 (20 min):** "Deberían tener primera query funcionando"
+- **17:25 (30 min):** "5 minutos para pulir - preparen demo"
+
+**Troubleshooting común:**
+- Chunks vacíos → Revisar parsing
+- Query sin resultados → Verificar indexación
+- Errores de API → Check API key
+- Latencia alta → Reducir K
+
+#### 6. Niveles de Implementación (Guiar según avance)
+
+**Nivel 1 - Básico (Mínimo viable):**
 ```python
-# ============= TECHNICAL DOCUMENTATION ASSISTANT =============
-
-from module_2_optimized import Module2_OptimizedRAG
-import re
-from typing import List, Dict
-
-class TechnicalDocsRAG(Module2_OptimizedRAG):
-    """
-    Sistema RAG para documentación técnica
-
-    Features:
-    - Detección de código en queries
-    - Generación de ejemplos de código
-    - Versionado de APIs
-    - Links a documentación oficial
-    """
-
-    def __init__(self):
-        super().__init__()
-        self.name = "Technical Docs Assistant"
-        self.version = "1.0.0"
-
-        self.config = {
-            "domain": "technical_documentation",
-            "language": "es",
-            "code_languages": ["python", "javascript", "bash"],
-            "api_version": "v1.0",
-            "include_code_examples": True
-        }
-
-        # Cache de código generado
-        self.code_cache = {}
-
-        print(f"✅ {self.name} v{self.version} inicializado")
-
-    def load_technical_docs(self):
-        """Cargar documentación técnica"""
-        print("📥 Cargando documentación técnica...")
-
-        # Cargar PDF técnico
-        doc = self.load_document("../data/technical_docs.pdf")
-        chunks = self.create_chunks(doc, chunk_size=1200, chunk_overlap=200)
-        self.index_chunks(chunks)
-
-        print(f"   ✅ {len(chunks)} chunks técnicos indexados")
-        return len(chunks)
-
-    def detect_code_request(self, query: str) -> bool:
-        """Detectar si piden código"""
-        code_keywords = [
-            'ejemplo', 'código', 'code', 'sample',
-            'cómo usar', 'implementar', 'función'
-        ]
-        return any(kw in query.lower() for kw in code_keywords)
-
-    def extract_api_name(self, query: str) -> str:
-        """Extraer nombre de API/función de la query"""
-        # Buscar patrones comunes: authenticate(), /api/users, class Database
-        patterns = [
-            r'(\w+)\(\)',  # function()
-            r'/api/(\w+)',  # /api/endpoint
-            r'class (\w+)'  # class Name
-        ]
-
-        for pattern in patterns:
-            match = re.search(pattern, query)
-            if match:
-                return match.group(1)
-
-        return None
-
-    def generate_code_example(self, api_name: str, language: str = "python") -> str:
-        """Generar ejemplo de código (simplificado)"""
-
-        # Templates básicos
-        templates = {
-            "authenticate": '''
-```python
-from api import authenticate
-
-# Autenticar usuario
-result = authenticate(
-    username="user@example.com",
-    password="secure_password"
-)
-
-if result.success:
-    print(f"Token: {result.token}")
-else:
-    print(f"Error: {result.error}")
+# SimpleRAG del Módulo 1
+rag = SimpleRAG()
+doc = rag.load_document("mis_datos.pdf")
+chunks = rag.create_chunks(doc)
+rag.index_chunks(chunks)
+result = rag.query("Mi pregunta")
+print(result)
 ```
-''',
-            "users": '''
+**Tiempo estimado:** 15 min
+**Para quién:** Principiantes o casos simples
+
+**Nivel 2 - Intermedio:**
 ```python
-import requests
-
-# Obtener lista de usuarios
-response = requests.get(
-    "https://api.example.com/users",
-    headers={"Authorization": f"Bearer {token}"}
-)
-
-users = response.json()
-for user in users:
-    print(f"{user['name']} - {user['email']}")
+# Con framework (LangChain/LlamaIndex)
+from langchain import ...
+# Setup vectorstore
+# Setup chain
+# Query con fuentes
 ```
-''',
-            "Database": '''
+**Tiempo estimado:** 25 min
+**Para quién:** Mayoría del grupo
+
+**Nivel 3 - Avanzado:**
 ```python
-from database import Database
+# Con API, streaming, auth
+from fastapi import FastAPI
+app = FastAPI()
 
-# Conectar a base de datos
-db = Database(
-    host="localhost",
-    port=5432,
-    database="myapp",
-    user="admin"
-)
-
-# Ejecutar query
-results = db.query("SELECT * FROM users WHERE active = true")
-db.close()
+@app.post("/query/stream")
+async def query_stream(...):
+    # Implementación completa
 ```
-'''
-        }
+**Tiempo estimado:** 35 min
+**Para quién:** Avanzados que terminaron rápido
 
-        return templates.get(api_name, f"# Ejemplo de código para {api_name} no disponible")
+---
 
-    def technical_query(self, question: str):
-        """Query con features técnicas"""
-        print(f"\n🔧 Technical Query: {question}")
+### PARTE 3: Presentaciones [17:30-17:45] - 15 min
 
-        # 1. Detectar si piden código
-        wants_code = self.detect_code_request(question)
+#### 7. Formato de Presentación (Explicar a las 17:25)
 
-        # 2. Query base
-        result = self.query(question)
+**Instructor anuncia:**
+> "En 5 minutos empezamos presentaciones. Cada persona tiene 3 minutos para mostrar su proyecto. Estructura:
+> 1. ¿Qué problema resuelve? (30 seg)
+> 2. Demo en vivo (2 min)
+> 3. Métricas y aprendizajes (30 seg)"
 
-        # 3. Si piden código, generarlo
-        code_example = None
-        if wants_code:
-            api_name = self.extract_api_name(question)
-            if api_name:
-                code_example = self.generate_code_example(api_name)
-                print(f"   💻 Código generado para: {api_name}")
+**Template de presentación:**
 
-        # 4. Construir respuesta mejorada
-        enhanced_response = result['response']
+**Slide mental / verbal:**
+1. **Problema:** "Mi RAG ayuda a..."
+2. **Datos:** "Indexé X documentos sobre..."
+3. **Demo:** [Mostrar 2-3 queries en vivo]
+4. **Métricas:** "Latencia: Xms, Accuracy: X%"
+5. **Aprendizajes:** "Lo más difícil fue..."
 
-        if code_example:
-            enhanced_response += f"\n\n### Ejemplo de Código:\n{code_example}"
+#### 8. Organización de Presentaciones (5 min)
 
-        # Añadir link a docs
-        enhanced_response += f"\n\n📚 [Ver documentación oficial](https://docs.ejemplo.com)"
+**Estrategia:**
+- 15 minutos ÷ 3 min/persona = ~5 presentaciones
+- Seleccionar 5 personas con proyectos diversos
 
-        return {
-            "answer": enhanced_response,
-            "code_included": code_example is not None,
-            "api_detected": self.extract_api_name(question),
-            "sources": result['metrics']['num_sources']
-        }
+**Criterios de selección:**
+- Diversidad de casos de uso
+- Diferentes niveles de complejidad
+- Diferentes frameworks usados
+- Algunos exitosos, algunos con challenges (honestidad)
 
-# ============= DEMO =============
+**Si hay más de 5 voluntarios:**
+- Votar rápidamente quiénes presentan
+- Los demás comparten en chat/Slack
 
-tech_docs = TechnicalDocsRAG()
-tech_docs.load_technical_docs()
+**Orden sugerido:**
+1. Proyecto más simple (motivar)
+2-4. Proyectos intermedios (variedad)
+5. Proyecto más complejo (inspirar)
 
-# Test
-queries = [
-    "¿Cómo funciona la función authenticate()?",
-    "¿Qué es un sistema RAG?",
-    "Dame un ejemplo de uso de /api/users"
-]
+#### 9. Presentaciones en Vivo (10 min)
 
-for q in queries:
-    result = tech_docs.technical_query(q)
-    print(f"\nRespuesta:\n{result['answer'][:300]}...")
-    print(f"Código incluido: {result['code_included']}")
-    print("-"*60)
+**Para cada presentación:**
+
+**Instructor como MC:**
+```
+"Siguiente: [Nombre]. Tienes 3 minutos. ¡Go!"
+```
+
+**Durante la presentación:**
+- Cronometrar silenciosamente
+- Avisar a los 2:30 ("30 segundos")
+- Cortar amablemente a los 3 min si se extienden
+
+**Después de cada una:**
+```
+"¡Excelente! Preguntas rápidas del grupo?"
+[1-2 preguntas máximo, 30 seg]
+```
+
+**Celebrar logros:**
+- "¡Wow, 400ms de latencia!"
+- "Me encanta el caso de uso"
+- "Que lograras agents en 35 min es increíble"
+
+#### 10. Ejemplos de Buenas Presentaciones
+
+**Ejemplo 1 - Simple pero efectivo:**
+> "Hice un RAG sobre el manual de mi empresa. Tenemos 50 páginas que nadie lee. Ahora los empleados pueden preguntar 'cuántos días de vacaciones' y obtener respuesta en 2 segundos. [Demo 3 queries]. Latencia: 1,200ms. Lo más difícil fue el chunking porque hay muchas tablas."
+
+**Ejemplo 2 - Técnico y detallado:**
+> "Sistema de búsqueda en 500 archivos de código Python. Usé LlamaIndex porque necesitaba búsqueda optimizada. Implementé re-ranking y metadata por carpeta. [Demo queries]. Latencia: 800ms. El desafío fue filtrar comentarios vs código real."
+
+**Ejemplo 3 - Ambicioso pero incompleto (también vale):**
+> "Quería hacer un asistente de viajes con agents para buscar vuelos. Logré indexar 20 itinerarios y hacer queries básicas. [Demo]. No alcancé a implementar agents pero aprendí un montón sobre prompts. Latencia: 2,000ms. Voy a terminarlo post-workshop."
+
+**Todas son válidas - celebrar el esfuerzo.**
+
+---
+
+## 🎉 Cierre del Workshop [17:45-18:00] - 15 min
+
+### Final del Módulo y del Workshop Completo
+
+#### 11. Recap del Día (5 min)
+
+**Instructor resume:**
+
+> "¡Qué día! Empezamos a las 8 AM sin saber qué era RAG. Ahora tienen sistemas de producción desplegados. Repasemos rápido:"
+
+**Journey del día:**
+```
+08:00 - 📚 Módulo 1: Primer RAG (2000ms, 70% accuracy)
+10:30 - ⚡ Módulo 2: Optimización (1000ms, 80% accuracy)
+12:30 - 🔧 Módulo 3: Frameworks (800ms, 85% accuracy)
+15:30 - 🚀 Módulo 4: Producción (500ms, 90% accuracy)
+16:45 - 💡 Módulo 5: Tu proyecto real
+
+MEJORA TOTAL: -75% latencia, +29% accuracy
+```
+
+**Métricas del grupo:**
+- X participantes
+- Y proyectos construidos
+- Z sistemas deployados
+- 9 horas de contenido
+
+#### 12. Recursos Post-Workshop (3 min)
+
+**Compartir recursos:**
+
+**Repositorio del workshop:**
+- Todos los notebooks
+- Soluciones completas
+- Guías del instructor
+- Slides y materiales
+
+**Comunidad:**
+- Canal de Slack/Discord (mantener activo 1 mes)
+- GitHub Discussions para preguntas
+- LinkedIn group (opcional)
+
+**Próximos pasos sugeridos:**
+1. **Esta semana:** Terminar el proyecto final
+2. **Este mes:** Deploy a producción en tu empresa
+3. **Este trimestre:** Compartir caso de éxito
+
+**Lecturas recomendadas:**
+- LangChain Docs (https://python.langchain.com/)
+- LlamaIndex Docs (https://docs.llamaindex.ai/)
+- RAG Papers (https://arxiv.org/search/?query=retrieval+augmented+generation)
+- Este repo: github.com/RomeroSecture/rag-workshop-2025
+
+#### 13. Feedback y Certificados (3 min)
+
+**Recoger feedback:**
+```
+Por favor completen la encuesta (2 min):
+[Link a Google Form]
+
+Preguntas:
+- ¿Qué fue lo más valioso?
+- ¿Qué mejorarías?
+- ¿Recomendarías el workshop? (NPS)
+- ¿Implementarás RAG en tu trabajo?
+```
+
+**Certificados (opcional):**
+- Enviar por email en 48h
+- Incluir: Nombre, fecha, temas cubiertos
+- LinkedIn-friendly
+
+#### 14. Cierre Motivacional (2 min)
+
+**Instructor cierra:**
+
+> "Gracias por su energía hoy. En 9 horas pasaron de cero a construir sistemas RAG de producción. Eso es tremendo.
+>
+> Recuerden: RAG no es solo tecnología - es una nueva forma de interactuar con información. Cada uno de ustedes ahora tiene el poder de construir sistemas inteligentes.
+>
+> Manténganse en contacto. Compartan sus proyectos. Y cuando alguien les pregunte '¿qué hiciste este sábado?' - digan con orgullo: 'Construí un sistema RAG de producción'.
+>
+> ¡Éxito en sus proyectos!"
+
+**[Aplauso del grupo]**
+
+#### 15. Q&A Final (2 min)
+
+**Preguntas abiertas:**
+- "¿Alguna pregunta final?"
+- "¿Algo que no quedó claro?"
+- "¿Necesitan ayuda con algo específico?"
+
+**Agradecer y despedir:**
+```
+"¡Hasta pronto! Estoy disponible en:
+- Email: aromero@secture.com
+- LinkedIn: [tu perfil]
+- GitHub: RomeroSecture
 ```
 
 ---
 
-## 🎯 Guía para Participantes
+## 📊 Métricas de Éxito del Workshop Completo
 
-### Para completar el proyecto final exitosamente:
+### Indicadores Cuantitativos Globales:
 
-#### 1. Elegir Caso de Uso (5 min)
-```python
-# Pregúntate:
-# - ¿Qué problema quiero resolver?
-# - ¿Qué datos tengo disponibles?
-# - ¿Qué hace único a mi solución?
+- [ ] **Completación:** >85% terminaron los 5 módulos
+- [ ] **Proyecto final:** >75% presentaron algo funcional
+- [ ] **Deploy:** >50% deployaron a producción
+- [ ] **Satisfacción:** NPS >8/10
+- [ ] **Aplicabilidad:** >70% implementarán en trabajo
+
+### Indicadores Cualitativos:
+
+- [ ] Participantes explican arquitectura RAG correctamente
+- [ ] Pueden elegir entre LangChain/LlamaIndex según caso
+- [ ] Conocen mejores prácticas de producción
+- [ ] Tienen proyecto funcional propio
+- [ ] Saben dónde buscar ayuda post-workshop
+
+---
+
+## 🚨 Troubleshooting del Módulo 5
+
+### 1. Participante sin idea de proyecto
+**Solución:** Sugerir proyecto genérico simple
+```
+"Haz RAG sobre 3 PDFs que tengas. Puede ser:
+- Documentos de trabajo
+- Papers que leíste
+- Manuales de productos"
 ```
 
-#### 2. Personalizar la Clase Base (15 min)
-```python
-class MiRAG(Module2_OptimizedRAG):
-    def __init__(self):
-        super().__init__()
-        self.name = "MI NOMBRE ÚNICO"
-        self.config = {
-            # MIS parámetros específicos
-        }
+### 2. Proyecto demasiado ambicioso
+**Solución:** Ayudar a reducir scope
+```
+"Ese proyecto es excelente pero muy grande.
+Para hoy: Solo indexación + query básica.
+Post-workshop: Añadir agents, API, etc."
 ```
 
-#### 3. Implementar Método de Carga (10 min)
-```python
-def load_my_data(self):
-    # Cargar MIS datos (PDF/JSON/CSV/API)
-    # Procesarlos para MI dominio
-    # Indexarlos
-    pass
+### 3. Atascado técnicamente
+**Solución:** Debug rápido
+```
+1. "¿Qué error específico ves?"
+2. "Muéstrame la última celda que ejecutaste"
+3. "Probemos esto..." [fix específico]
 ```
 
-#### 4. Añadir Feature Especial (10 min)
-```python
-def my_special_feature(self, query):
-    # LO QUE HACE ÚNICO a mi sistema
-    # Ejemplos: escalación, código, visualización
-    pass
+### 4. No tiene datos para indexar
+**Solución:** Usar datos de ejemplo
+```
+"Usa los datos del workshop:
+- company_handbook.pdf
+- technical_docs.pdf
+Adapta las queries a tu caso hipotético"
 ```
 
-#### 5. Probar y Iterar (10 min)
-```python
-# Probar con queries REALES de MI dominio
-# Medir latencia, calidad, costo
-# Iterar hasta que funcione bien
+### 5. Muy atrasado (a los 25 min aún no tiene nada)
+**Solución:** Simplificar radicalmente
+```
+"Copia el SimpleRAG del Módulo 1.
+Cambia solo:
+1. El documento (tu PDF)
+2. Las queries (tu caso)
+Eso es suficiente para presentar"
 ```
 
 ---
 
-## ✅ Checklist de Completitud
+## 💡 Tips de Enseñanza para Módulo 5
 
-Para considerar el proyecto final completo:
+### Gestión del Tiempo
+- **Ser estricto con 3 min por presentación**
+- Timer visible para todos
+- Avisar a los 2:30 min
 
-- [ ] Caso de uso claramente definido
-- [ ] Clase personalizada con nombre único
-- [ ] Configuración adaptada al dominio
-- [ ] Al menos un método de carga de datos implementado
-- [ ] Al menos una feature especial funcional
-- [ ] 3-5 queries de prueba exitosas
-- [ ] Métricas básicas medidas
-- [ ] Presentación de 5 min preparada
+### Motivación
+- **Todos los proyectos son válidos**
+- Celebrar hasta los más simples
+- "No perfecto, funcional"
 
----
+### Selección de Presentadores
+- Pedir voluntarios primero
+- Si pocos levantan mano, elegir tú
+- Priorizar diversidad de proyectos
 
-## 🎤 Template de Presentación
+### Manejo de Errores en Demo
+- "Los bugs en vivo son parte del desarrollo"
+- Si falla: "Explica qué debería hacer"
+- No dejar a nadie en ridículo
 
-```
-SLIDE 1: TÍTULO (30 seg)
-- Nombre del proyecto
-- Problema que resuelve
-- Tu nombre
-
-SLIDE 2: DEMO (2 min)
-- Ejecutar 2-3 queries en vivo
-- Mostrar respuestas
-- Destacar features especiales
-
-SLIDE 3: ARQUITECTURA (1 min)
-- Diagrama simple
-- Componentes clave
-- Lo que hace único
-
-SLIDE 4: MÉTRICAS (1 min)
-- Latencia lograda
-- Calidad/Accuracy
-- Impacto estimado
-
-SLIDE 5: PRÓXIMOS PASOS (30 seg)
-- Qué mejorarías
-- Cómo lo llevarías a producción
-- Visión a futuro
-```
+### Energía
+- El grupo está cansado (9 horas)
+- Mantener energía alta
+- Celebrar logros
+- Cierre motivacional importante
 
 ---
 
-**🎉 El proyecto final es TU oportunidad de brillar. No hay respuestas correctas o incorrectas, solo soluciones creativas a problemas reales!**
+## 📚 Rubric de Evaluación (Opcional)
+
+Si quieres evaluar proyectos formalmente:
+
+| Criterio | Peso | Excelente (3) | Bueno (2) | Básico (1) |
+|----------|------|---------------|-----------|------------|
+| **Funcionalidad** | 30% | RAG completo + features | RAG básico funciona | Código corre parcialmente |
+| **Caso de uso** | 20% | Problema real claro | Caso genérico | Poco claro |
+| **Implementación** | 25% | Usa conceptos M2-M4 | Usa conceptos M1-M2 | Solo M1 |
+| **Presentación** | 15% | Clara y concisa | Aceptable | Confusa |
+| **Métricas** | 10% | Mide y optimiza | Mide básicas | No mide |
+
+**Threshold:** >60% para certificado (si aplica)
+
+---
+
+## ✅ Checklist del Instructor - Módulo 5
+
+**Antes (16:40):**
+- [ ] Preparar cronómetro para presentaciones
+- [ ] Tener ejemplos de proyectos simples
+- [ ] Link a encuesta de feedback listo
+- [ ] Certificados preparados (si aplica)
+
+**Durante (16:45-17:30):**
+- [ ] Ayudar en planificación (primeros 5 min)
+- [ ] Circular durante desarrollo
+- [ ] Avisar checkpoints de tiempo
+- [ ] Seleccionar 5 presentadores
+
+**Presentaciones (17:30-17:45):**
+- [ ] Cronometrar estrictamente
+- [ ] Celebrar cada proyecto
+- [ ] Facilitar Q&A breve
+- [ ] Mantener energía alta
+
+**Cierre (17:45-18:00):**
+- [ ] Recap del día completo
+- [ ] Compartir recursos
+- [ ] Recoger feedback
+- [ ] Cierre motivacional
+- [ ] Fotos del grupo (opcional)
+
+---
+
+## 🎓 Post-Workshop
+
+**Dentro de 48h:**
+- [ ] Enviar email de agradecimiento
+- [ ] Compartir materiales adicionales
+- [ ] Enviar certificados (si aplica)
+- [ ] Crear canal permanente de comunicación
+
+**Dentro de 1 semana:**
+- [ ] Analizar feedback
+- [ ] Responder preguntas pendientes
+- [ ] Compartir casos de éxito
+
+**Dentro de 1 mes:**
+- [ ] Follow-up de proyectos
+- [ ] Compartir mejores implementaciones
+- [ ] Planear workshop avanzado (opcional)
+
+---
+
+## 🏆 Casos de Éxito Inspiradores
+
+**Para compartir al final:**
+
+"Participantes de workshops anteriores han creado:
+- Sistema RAG con 100K documentos en producción
+- Chatbot que redujo tickets de soporte 40%
+- Asistente de documentación usado por 500 devs
+- RAG médico con papers científicos
+
+**Ustedes pueden ser el próximo caso de éxito.**"
+
+---
+
+**¡FIN DEL WORKSHOP! 🎉**
+
+**Resumen ejecutivo:**
+- 9 horas de contenido
+- 5 módulos completos
+- De 0 a producción
+- Sistema deployado
+- Proyecto real construido
+
+**¡Lo lograron! 🚀**
