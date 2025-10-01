@@ -1,9 +1,11 @@
 # 🚀 RAG Workshop 2025 - De Cero a Producción en 8 Horas
 
-[![GitHub Codespaces](https://img.shields.io/badge/GitHub-Codespaces-blue?logo=github)](https://github.com/codespaces)
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/RomeroSecture/rag-workshop-2025?quickstart=1)
 [![Python 3.11](https://img.shields.io/badge/Python-3.11-blue.svg)](https://python.org)
 [![OpenAI](https://img.shields.io/badge/OpenAI-API-green.svg)](https://openai.com)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+> 💡 **¡TODO EN LA NUBE!** Haz clic en el badge de arriba para iniciar en GitHub Codespaces (100% gratis, sin instalación)
 
 ## 📋 Descripción
 
