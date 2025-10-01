@@ -43,7 +43,7 @@ Al finalizar esta sesión, los participantes deberán:
 ### 1. Apertura (2 min) [08:00-08:02]
 
 **Instructor dice:**
-> "¡Buenos días a todos! Bienvenidos al RAG Workshop 2025. En las próximas 8 horas vamos a construir sistemas RAG de producción desde cero. Este notebook es para verificar que todo funciona correctamente antes de empezar."
+> "¡Buenos días a todos! Bienvenidos al RAG Workshop 2025. Tenemos un día intenso por delante: 9 horas de contenido (8:00-18:00 con 1 hora de comida a las 14:00). Vamos a construir sistemas RAG de producción desde cero. Este notebook es para verificar que todo funciona correctamente antes de empezar."
 
 **Acciones:**
 - Compartir pantalla mostrando el README del repositorio

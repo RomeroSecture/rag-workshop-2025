@@ -5,7 +5,11 @@
 
 ## 📋 Información General
 
-**Duración:** 90 minutos (09:45-11:15)
+**Duración:** 90 minutos (10:45-12:15 con break 12:15-12:30)
+- **Teoría:** 45 min (10:45-11:30)
+- **Práctica:** 45 min (11:30-12:15)
+- **Break:** 15 min (12:15-12:30)
+
 **Objetivo:** Optimizar el RAG básico para mejorar latencia, costo y calidad
 **Nivel:** Intermedio
 **Pre-requisitos:** Haber completado Módulo 1 (SimpleRAG funcional)
@@ -40,17 +44,17 @@ Al finalizar este módulo, los participantes serán capaces de:
 
 | Tiempo | Sección | Actividad | Celdas |
 |--------|---------|-----------|--------|
-| 00:00-00:15 | Parte 1: Comparación | Baseline vs Optimized | 1-5 |
-| 00:15-00:45 | Parte 2: Optimizaciones | Cache, Rerank, Metadatos | 6-9 |
-| 00:45-01:00 | Parte 3: Prompts | Templates y Temperature | 10-12 |
-| 01:00-01:20 | Parte 4: Benchmark | Comparación final | 13-15 |
-| 01:20-01:30 | Ejercicios | Práctica guiada | 16-19 |
+| 10:45-11:00 | Parte 1: Comparación | Baseline vs Optimized | 1-5 |
+| 11:00-11:30 | Parte 2: Optimizaciones | Cache, Rerank, Metadatos | 6-9 |
+| 11:30-11:45 | Parte 3: Prompts | Templates y Temperature | 10-12 |
+| 11:45-12:05 | Parte 4: Benchmark | Comparación final | 13-15 |
+| 12:05-12:15 | Ejercicios | Práctica guiada | 16-19 |
 
 ---
 
 ## 📝 Guión de la Sesión
 
-### PARTE 1: Comparación con Módulo 1 [09:45-10:00] - 15 min
+### PARTE 1: Comparación con Módulo 1 [10:45-11:00] - 15 min
 
 #### 1. Setup y Contexto (3 min)
 
@@ -139,7 +143,7 @@ v2_contains = sum(1 for c in chunks_v2 if test_phrase in c.lower())  # → 2
 
 ---
 
-### PARTE 2: Optimizaciones Avanzadas [10:00-10:30] - 30 min
+### PARTE 2: Optimizaciones Avanzadas [11:00-11:30] - 30 min
 
 #### 3. Indexación Optimizada (5 min)
 
@@ -389,7 +393,7 @@ section_stats = Counter(r['metadata']['section'] for r in all_queries)
 
 ---
 
-### PARTE 3: Optimización de Prompts [10:30-10:45] - 15 min
+### PARTE 3: Optimización de Prompts [11:30-11:45] - 15 min
 
 #### 7. Comparar Prompts (7 min)
 
@@ -530,7 +534,7 @@ disfrutar de casi un mes de vacaciones, y además...
 
 ---
 
-### PARTE 4: Métricas y Comparación Final [10:45-11:05] - 20 min
+### PARTE 4: Métricas y Comparación Final [11:45-12:05] - 20 min
 
 #### 9. Benchmark Completo (12 min)
 
@@ -620,7 +624,7 @@ Nuevos componentes:
 
 ---
 
-### PARTE 5: Ejercicios Prácticos [11:05-11:15] - 10 min
+### PARTE 5: Ejercicios Prácticos [12:05-12:15] - 10 min
 
 **Instructor presenta los 3 ejercicios (Celdas 17-19):**
 
@@ -736,7 +740,7 @@ Nota: Para troubleshooting, contacta IT Help Desk (ext. 5500).
 
 ---
 
-## 🎉 Cierre del Módulo [11:10-11:15] - 5 min
+## 🎉 Cierre del Módulo [12:10-12:15] - 5 min
 
 **Instructor ejecuta Celda 20 y resume:**
 
@@ -768,7 +772,7 @@ Nota: Para troubleshooting, contacta IT Help Desk (ext. 5500).
 > - **Evaluación:** Para medir calidad objetivamente"
 
 **Transición:**
-> "¡Es hora del almuerzo! 45 minutos de break. Volvemos a las 12:00 PM. Aprovechen para:
+> "¡Break de 15 minutos! Nos vemos en el Módulo 3 a las 12:30\. Aprovechen para:
 > - Experimentar con los ejercicios
 > - Revisar las soluciones en `/solutions/nivel_2_workshop/`
 > - Pensar en su caso de uso específico"

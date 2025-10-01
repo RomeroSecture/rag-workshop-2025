@@ -5,7 +5,10 @@
 
 ## 📋 Información General
 
-**Duración:** 75 minutos (08:15-09:30)
+**Duración:** 135 minutos (08:15-10:30)
+- **Teoría:** 60 min (08:15-09:15)
+- **Práctica:** 75 min (09:15-10:30)
+
 **Objetivo:** Construir un sistema RAG funcional desde cero
 **Nivel:** Fundamentos
 **Pre-requisitos:** Haber completado Notebook 00 (setup verificado)
@@ -31,15 +34,18 @@ Al finalizar este módulo, los participantes serán capaces de:
 
 | Tiempo | Sección | Actividad | Celdas |
 |--------|---------|-----------|--------|
-| 00:00-00:20 | Parte 1: Teoría | Conceptos y arquitectura RAG | 1-4 |
-| 00:20-00:40 | Parte 2: Implementación | Construir SimpleRAG | 5-9 |
-| 00:40-01:15 | Parte 3: Práctica | Experimentos y optimización | 10-18 |
+| 08:15-08:35 | Parte 1: Teoría | Conceptos y arquitectura RAG | 1-4 |
+| 08:35-08:55 | Parte 2: Implementación | Construir SimpleRAG | 5-9 |
+| 08:55-09:15 | Parte 3: Demo | Primera query y métricas | 10-11 |
+| 09:15-09:30 | Parte 4: Experimentos | Parámetros y optimización | 12-14 |
+| 09:30-10:00 | Parte 5: Práctica | Queries variadas y edge cases | 15-16 |
+| 10:00-10:30 | Parte 6: Desafíos | Ejercicios adicionales | 17-18 |
 
 ---
 
 ## 📝 Guión de la Sesión
 
-### PARTE 1: Setup y Conceptos [08:15-08:35] - 20 min
+### PARTE 1: Conceptos Fundamentales [08:15-08:35] - 20 min
 
 #### 1. Introducción a RAG (5 min)
 
@@ -150,7 +156,7 @@ R: "Muy buena. Encuentra 'días de descanso' cuando preguntas por 'vacaciones' p
 
 ---
 
-### PARTE 2: Implementación Básica [08:35-08:55] - 20 min
+### PARTE 2: Implementación Básica [08:35-09:15] - 40 min
 
 #### 5. Construyendo SimpleRAG (8 min)
 
@@ -366,7 +372,7 @@ de lunes a viernes, con una hora de almuerzo.
 
 ---
 
-### PARTE 3: Práctica - Tu Turno [08:55-09:30] - 35 min
+### PARTE 3: Práctica - Tu Turno [09:15-10:30] - 75 min
 
 #### 9. Primera Query Guiada (5 min)
 
@@ -538,7 +544,7 @@ metrics.plot_progress()
 
 ---
 
-## 🎉 Cierre del Módulo [09:25-09:30] - 5 min
+## 🎉 Cierre del Módulo [10:25-10:30] - 5 min
 
 **Instructor ejecuta última celda (19) y resume:**
 
@@ -565,7 +571,7 @@ metrics.plot_progress()
 > - Prompts avanzados"
 
 **Transición:**
-> "Tomen un break de 15 minutos. Estiren las piernas, café, y nos vemos en Módulo 2 a las 09:45!"
+> "¡Excelente trabajo! Tomen un break de 15 minutos. Estiren las piernas, café, y nos vemos en Módulo 2 a las 10:45!"
 
 ---
 
