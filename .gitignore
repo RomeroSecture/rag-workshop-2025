@@ -121,3 +121,14 @@ yarn.lock
 private/
 confidential/
 DO_NOT_COMMIT/
+
+# Solutions de participantes (no versionar sus trabajos)
+solutions/nivel_1_basico/*.py
+solutions/nivel_2_workshop/*.py
+solutions/nivel_3_produccion/*.py
+solutions/**/*.py
+!solutions/**/README.md  # Mantener READMEs
+solutions/**/*.ipynb
+solutions/**/*.md
+!solutions/README.md
+!solutions/nivel_*/README.md
