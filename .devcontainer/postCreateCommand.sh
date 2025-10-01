@@ -13,25 +13,17 @@ pip install -r requirements.txt
 echo "📂 Preparando directorios..."
 mkdir -p data/processed
 mkdir -p data/vectordb
+mkdir -p data/cache
 mkdir -p logs
 mkdir -p outputs
 
 # Configurar Jupyter
 echo "📓 Configurando Jupyter..."
-jupyter notebook --generate-config
-jupyter lab --generate-config
+jupyter notebook --generate-config || true
+jupyter lab --generate-config || true
 
 # Instalar kernels adicionales
 python -m ipykernel install --user --name rag-env --display-name "RAG Workshop"
-
-# Configurar Git
-git config --global user.name "Workshop User"
-git config --global user.email "workshop@rag.dev"
-git config --global init.defaultBranch main
-
-# Descargar modelos de spaCy si es necesario
-python -m spacy download es_core_news_sm
-python -m spacy download en_core_web_sm
 
 # Crear archivo .env desde template
 if [ ! -f .env ]; then
@@ -41,13 +33,33 @@ fi
 
 # Verificar instalación
 echo "✅ Verificando instalación..."
-python -c "import chromadb; import openai; import langchain; print('✅ Todas las librerías instaladas correctamente')"
+python -c "
+try:
+    import chromadb
+    import openai
+    import langchain
+    import llama_index
+    print('✅ Todas las librerías principales instaladas correctamente')
+except ImportError as e:
+    print(f'⚠️  Advertencia: {e}')
+"
 
-# Crear datos de ejemplo si no existen
+# Verificar que los datos de ejemplo existen
 if [ ! -f data/company_handbook.pdf ]; then
-    echo "📄 Generando documentos de ejemplo..."
-    python src/utils.py --create-sample-data
+    echo "⚠️  Datos de ejemplo no encontrados. Los notebooks pueden requerir configuración adicional."
 fi
+
+# Verificar API key
+python -c "
+import os
+from dotenv import load_dotenv
+load_dotenv()
+api_key = os.getenv('OPENAI_API_KEY', '')
+if api_key and api_key.startswith('sk-'):
+    print('✅ API Key detectada (recuerda configurarla si es un placeholder)')
+else:
+    print('⚠️  API Key no configurada - edita el archivo .env')
+"
 
 # Mensaje de bienvenida
 echo "
@@ -61,9 +73,9 @@ echo "
 ║                                               ║
 ║  ⚠️  Recuerda configurar tu API key en .env  ║
 ║                                               ║
+║  Abre notebooks/00_inicio.ipynb para empezar ║
+║                                               ║
 ╚═══════════════════════════════════════════════╝
 "
 
-# Abrir primer notebook automáticamente
-echo "🎯 Abriendo notebook de inicio..."
-code notebooks/00_inicio.ipynb
+echo "✅ Setup completado en $(date)"

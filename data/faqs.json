@@ -1,0 +1,69 @@
+{
+  "metadata": {
+    "version": "2.0",
+    "last_updated": "2025-01-15",
+    "total_faqs": 10
+  },
+  "faqs": [
+    {
+      "id": 1,
+      "category": "Vacaciones",
+      "question": "¿Cuántos días de vacaciones tengo?",
+      "answer": "Depende de tu antigüedad: 22 días (0-5 años), 25 días (5-10 años), 30+ días (10+ años)."
+    },
+    {
+      "id": 2,
+      "category": "Vacaciones",
+      "question": "¿Puedo comprar días de vacaciones adicionales?",
+      "answer": "Sí, todos los empleados pueden comprar hasta 5 días de vacaciones adicionales al año."
+    },
+    {
+      "id": 3,
+      "category": "Trabajo Remoto",
+      "question": "¿Puedo trabajar completamente remoto?",
+      "answer": "Depende del rol. Hay posiciones full remote, pero la mayoría son híbridas (3 días oficina, 2 remoto)."
+    },
+    {
+      "id": 4,
+      "category": "Trabajo Remoto",
+      "question": "¿Qué subsidios hay para trabajo remoto?",
+      "answer": "50€ mensuales para internet más equipamiento completo (portátil, monitor, teclado, ratón)."
+    },
+    {
+      "id": 5,
+      "category": "Técnico",
+      "question": "¿Qué base de datos vectorial usamos?",
+      "answer": "Usamos ChromaDB para almacenar y buscar embeddings de documentos."
+    },
+    {
+      "id": 6,
+      "category": "Técnico",
+      "question": "¿Cuál es la latencia objetivo del sistema RAG?",
+      "answer": "El objetivo es <500ms para el percentil 95 de todas las queries."
+    },
+    {
+      "id": 7,
+      "category": "Técnico",
+      "question": "¿Qué modelo de embeddings utilizamos?",
+      "answer": "text-embedding-3-small de OpenAI, que genera embeddings de 1536 dimensiones."
+    },
+    {
+      "id": 8,
+      "category": "Beneficios",
+      "question": "¿Hay días adicionales por antigüedad?",
+      "answer": "Sí, se otorga un día adicional de vacaciones por cada 5 años de antigüedad."
+    },
+    {
+      "id": 9,
+      "category": "Proceso",
+      "question": "¿Con cuánta antelación debo solicitar vacaciones?",
+      "answer": "Se requiere al menos 15 días de antelación, salvo emergencias que se manejan con RRHH."
+    },
+    {
+      "id": 10,
+      "category": "Técnico",
+      "question": "¿Cómo monitoreamos el rendimiento del sistema?",
+      "answer": "Usamos logs estructurados, métricas en Prometheus y traces en OpenTelemetry."
+    }
+  ]
+}

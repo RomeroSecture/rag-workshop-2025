@@ -1,0 +1,53 @@
+# Auto detect text files and perform LF normalization
+* text=auto
+
+# Jupyter notebooks
+*.ipynb linguist-documentation=false
+
+# Binary files
+*.pdf binary
+*.pkl binary
+*.bin binary
+*.ckpt binary
+*.safetensors binary
+*.onnx binary
+*.db binary
+*.sqlite binary
+*.sqlite3 binary
+
+# Images
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+
+# Archives
+*.zip binary
+*.tar binary
+*.gz binary
+*.rar binary
+*.7z binary
+
+# Force LF for shell scripts
+*.sh text eol=lf
+
+# Python
+*.py text eol=lf
+*.pyx text eol=lf
+*.pyi text eol=lf
+
+# Markdown
+*.md text eol=lf
+*.markdown text eol=lf
+
+# JSON/YAML/TOML
+*.json text eol=lf
+*.yaml text eol=lf
+*.yml text eol=lf
+*.toml text eol=lf
+
+# Configuration files
+.env* text eol=lf
+.gitignore text eol=lf
+.gitattributes text eol=lf

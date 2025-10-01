@@ -33,12 +33,10 @@ pandas==2.2.0
 beautifulsoup4==4.12.3
 markdown==3.5.2
 pypandoc==1.13
+reportlab==4.0.4
 
 # NLP and Text Processing
-spacy==3.7.4
-nltk==3.8.1
 tiktoken==0.6.0
-transformers==4.40.0
 sentence-transformers==2.7.0
 
 # Web Frameworks

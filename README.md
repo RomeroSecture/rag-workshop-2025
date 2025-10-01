@@ -19,6 +19,8 @@ Workshop intensivo de 8 horas para dominar Retrieval-Augmented Generation (RAG) 
 
 ## 🚀 Quick Start (Para Alumnos)
 
+> **📖 Guía detallada**: Ver [QUICK_START.md](QUICK_START.md) para instrucciones paso a paso
+
 ### Opción 1: GitHub Codespaces (Recomendado - Sin instalación)
 
 1. **Fork este repositorio**
@@ -29,7 +31,7 @@ Workshop intensivo de 8 horas para dominar Retrieval-Augmented Generation (RAG) 
    - Selecciona la pestaña "Codespaces"
    - Click en "Create codespace on main"
    
-3. **Esperar 2-3 minutos** mientras se configura el ambiente
+3. **Esperar 3-5 minutos** mientras se configura el ambiente automáticamente
 
 4. **Configurar tu API Key**
    ```bash
@@ -181,7 +183,7 @@ Al finalizar el workshop podrás:
 - 👥 Pregunta a tu buddy
 
 ### Después del Workshop
-- 📧 Email: [instructor@email.com]
+- 📧 Email: aromero@secture.com
 - 📚 [Documentación extendida](docs/)
 - 🎥 Grabación disponible en 48h
 
