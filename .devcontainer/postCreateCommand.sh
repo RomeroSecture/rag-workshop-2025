@@ -2,9 +2,18 @@
 
 echo "🔧 Configurando ambiente RAG Workshop..."
 
+# Asegurar que .local/bin está en PATH
+export PATH="/home/vscode/.local/bin:$PATH"
+
+# Añadir al bashrc para sesiones futuras
+if ! grep -q "/home/vscode/.local/bin" ~/.bashrc; then
+    echo 'export PATH="/home/vscode/.local/bin:$PATH"' >> ~/.bashrc
+fi
+
 # Asegurar que usamos el Python correcto
 PYTHON_CMD=$(which python3)
 echo "🐍 Usando Python: $PYTHON_CMD"
+echo "📍 PATH actualizado: $PATH"
 
 # Actualizar pip en el Python del sistema
 $PYTHON_CMD -m pip install --upgrade pip
