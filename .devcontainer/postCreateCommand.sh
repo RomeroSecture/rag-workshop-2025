@@ -2,12 +2,22 @@
 
 echo "🔧 Configurando ambiente RAG Workshop..."
 
-# Actualizar pip
-pip install --upgrade pip
+# Asegurar que usamos el Python correcto
+PYTHON_CMD=$(which python3)
+echo "🐍 Usando Python: $PYTHON_CMD"
 
-# Instalar dependencias principales
+# Actualizar pip en el Python del sistema
+$PYTHON_CMD -m pip install --upgrade pip
+
+# Instalar dependencias principales en el Python del sistema
 echo "📦 Instalando dependencias..."
-pip install -r requirements.txt
+$PYTHON_CMD -m pip install -r requirements.txt
+
+# Verificar que se instalaron correctamente
+echo "🔍 Verificando instalación..."
+$PYTHON_CMD -c "import sys; print(f'Python path: {sys.executable}')"
+$PYTHON_CMD -c "import openai; print(f'OpenAI: {openai.__version__}')"
+$PYTHON_CMD -c "import chromadb; print(f'ChromaDB: {chromadb.__version__}')"
 
 # Crear estructura de datos si no existe
 echo "📂 Preparando directorios..."
@@ -19,11 +29,21 @@ mkdir -p outputs
 
 # Configurar Jupyter
 echo "📓 Configurando Jupyter..."
-jupyter notebook --generate-config || true
-jupyter lab --generate-config || true
+$PYTHON_CMD -m jupyter notebook --generate-config || true
+$PYTHON_CMD -m jupyter lab --generate-config || true
 
-# Instalar kernels adicionales
-python -m ipykernel install --user --name rag-env --display-name "RAG Workshop"
+# Instalar kernel de Jupyter usando el mismo Python
+echo "🎯 Instalando Jupyter kernel..."
+$PYTHON_CMD -m ipykernel install --user --name python3 --display-name "Python 3 (RAG Workshop)"
+
+# Verificar que el kernel tiene acceso a las librerías
+echo "✅ Verificando kernel..."
+$PYTHON_CMD -c "
+import sys
+import json
+kernel_path = f'{sys.prefix}/share/jupyter/kernels/python3/kernel.json'
+print(f'Kernel configurado en: {kernel_path}')
+"
 
 # Crear archivo .env desde template
 if [ ! -f .env ]; then
@@ -31,18 +51,39 @@ if [ ! -f .env ]; then
     echo "⚠️  Por favor, configura tu API key en el archivo .env"
 fi
 
-# Verificar instalación
-echo "✅ Verificando instalación..."
-python -c "
-try:
-    import chromadb
-    import openai
-    import langchain
-    import llama_index
-    print('✅ Todas las librerías principales instaladas correctamente')
-except ImportError as e:
-    print(f'⚠️  Advertencia: {e}')
+# Verificar instalación detallada
+echo ""
+echo "═══════════════════════════════════════════════"
+echo "🔍 VERIFICACIÓN FINAL DE INSTALACIÓN"
+echo "═══════════════════════════════════════════════"
+
+$PYTHON_CMD -c "
+import sys
+print(f'🐍 Python: {sys.version}')
+print(f'📍 Ubicación: {sys.executable}')
+print()
+
+# Verificar cada librería principal
+libraries = ['openai', 'chromadb', 'langchain', 'llama_index', 'fastapi', 'jupyter']
+failed = []
+
+for lib in libraries:
+    try:
+        mod = __import__(lib)
+        version = getattr(mod, '__version__', 'unknown')
+        print(f'✅ {lib:15s} {version}')
+    except ImportError as e:
+        print(f'❌ {lib:15s} NO INSTALADO')
+        failed.append(lib)
+
+print()
+if not failed:
+    print('✅ TODAS LAS LIBRERÍAS INSTALADAS CORRECTAMENTE')
+else:
+    print(f'⚠️  FALTAN: {', '.join(failed)}')
+    print('   Ejecuta: pip install -r requirements.txt')
 "
+echo "═══════════════════════════════════════════════"
 
 # Verificar que los datos de ejemplo existen
 if [ ! -f data/company_handbook.pdf ]; then
@@ -78,4 +119,20 @@ echo "
 ╚═══════════════════════════════════════════════╝
 "
 
+# Crear script de reinstalación por si acaso
+cat > /workspace/reinstall-dependencies.sh << 'REINSTALL'
+#!/bin/bash
+echo "🔄 Reinstalando dependencias del RAG Workshop..."
+python3 -m pip install --upgrade pip
+python3 -m pip install -r requirements.txt --force-reinstall
+echo "✅ Reinstalación completada. Reinicia el kernel de Jupyter."
+REINSTALL
+
+chmod +x /workspace/reinstall-dependencies.sh
+
+echo ""
 echo "✅ Setup completado en $(date)"
+echo ""
+echo "💡 Si encuentras problemas con las librerías:"
+echo "   Ejecuta: bash reinstall-dependencies.sh"
+echo ""
