@@ -1,0 +1,97 @@
+# Core Dependencies
+openai==1.45.0
+anthropic==0.34.0
+cohere==5.5.0
+python-dotenv==1.0.0
+
+# Vector Databases
+chromadb==0.5.0
+faiss-cpu==1.8.0
+pinecone-client==3.2.2
+qdrant-client==1.9.0
+
+# Langchain Ecosystem
+langchain==0.2.11
+langchain-community==0.2.10
+langchain-openai==0.1.20
+langchain-chroma==0.1.2
+langchain-experimental==0.0.62
+langgraph==0.1.0
+
+# LlamaIndex
+llama-index==0.10.55
+llama-index-embeddings-openai==0.1.10
+llama-index-vector-stores-chroma==0.1.9
+llama-index-llms-openai==0.1.24
+
+# Document Processing
+PyPDF2==3.0.1
+pdfplumber==0.10.0
+python-docx==1.1.0
+openpyxl==3.1.2
+pandas==2.2.0
+beautifulsoup4==4.12.3
+markdown==3.5.2
+pypandoc==1.13
+
+# NLP and Text Processing
+spacy==3.7.4
+nltk==3.8.1
+tiktoken==0.6.0
+transformers==4.40.0
+sentence-transformers==2.7.0
+
+# Web Frameworks
+fastapi==0.110.0
+uvicorn==0.29.0
+streamlit==1.35.0
+gradio==4.31.0
+
+# Utilities
+numpy==1.26.4
+scipy==1.13.0
+scikit-learn==1.4.2
+matplotlib==3.8.4
+seaborn==0.13.2
+plotly==5.20.0
+tqdm==4.66.2
+rich==13.7.1
+python-multipart==0.0.9
+
+# Development Tools
+pytest==8.1.1
+pytest-asyncio==0.23.6
+black==24.3.0
+pylint==3.1.0
+mypy==1.9.0
+ipykernel==6.29.3
+jupyter==1.0.0
+jupyterlab==4.1.5
+ipywidgets==8.1.2
+
+# Monitoring and Observability
+loguru==0.7.2
+wandb==0.16.6
+prometheus-client==0.20.0
+opentelemetry-api==1.24.0
+opentelemetry-sdk==1.24.0
+
+# Database Clients
+redis==5.0.3
+pymongo==4.6.3
+psycopg2-binary==2.9.9
+
+# API and HTTP
+httpx==0.27.0
+aiohttp==3.9.3
+requests==2.31.0
+pydantic==2.7.0
+pydantic-settings==2.2.1
+
+# Caching
+diskcache==5.6.3
+cachetools==5.3.3
+
+# Optional: Local Models
+# ollama==0.1.8
+# huggingface-hub==0.22.2

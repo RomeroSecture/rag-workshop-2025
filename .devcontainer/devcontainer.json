@@ -1,0 +1,53 @@
+{
+  "name": "RAG Workshop 2025",
+  "image": "mcr.microsoft.com/devcontainers/python:3.11",
+  "features": {
+    "ghcr.io/devcontainers/features/python:1": {
+      "version": "3.11",
+      "installJupyterlab": true
+    },
+    "ghcr.io/devcontainers/features/git:1": {},
+    "ghcr.io/devcontainers/features/github-cli:1": {}
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "ms-toolsai.jupyter",
+        "ms-toolsai.vscode-jupyter-cell-tags",
+        "ms-toolsai.jupyter-keymap",
+        "ms-toolsai.jupyter-renderers",
+        "github.copilot",
+        "github.copilot-chat",
+        "eamodio.gitlens",
+        "mhutchie.git-graph",
+        "donjayamanne.githistory"
+      ],
+      "settings": {
+        "python.defaultInterpreterPath": "/usr/local/bin/python",
+        "python.linting.enabled": true,
+        "python.linting.pylintEnabled": true,
+        "python.formatting.provider": "black",
+        "python.formatting.blackPath": "/usr/local/bin/black",
+        "editor.formatOnSave": true,
+        "editor.rulers": [80, 120],
+        "terminal.integrated.defaultProfile.linux": "bash",
+        "jupyter.askForKernelRestart": false,
+        "jupyter.interactiveWindow.textEditor.executeSelection": true
+      }
+    }
+  },
+  "forwardPorts": [8501, 8000, 8888],
+  "postCreateCommand": "bash .devcontainer/postCreateCommand.sh",
+  "postStartCommand": "echo '🚀 RAG Workshop Environment Ready!'",
+  "remoteUser": "vscode",
+  "mounts": [
+    "source=${localWorkspaceFolder}/data,target=/workspace/data,type=bind,consistency=cached"
+  ],
+  "runArgs": ["--name", "rag-workshop-container"],
+  "containerEnv": {
+    "PYTHONPATH": "/workspace/src",
+    "JUPYTER_ENABLE_LAB": "yes"
+  }
+}
