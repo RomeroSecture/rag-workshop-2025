@@ -10,6 +10,9 @@ import time
 from datetime import datetime
 from enum import Enum
 
+# Deshabilitar telemetría de ChromaDB (evita warnings de posthog)
+os.environ["ANONYMIZED_TELEMETRY"] = "False"
+
 class Module(Enum):
     """Módulos del workshop"""
     BASICS = 1
@@ -278,12 +281,13 @@ def measure_performance(func):
         result = func(*args, **kwargs)
         end = time.time()
         latency = (end - start) * 1000  # ms
-        
+
         # Log si es una función de query
         if hasattr(func, "__self__") and hasattr(func.__self__, "module"):
             print(f"⏱️ {func.__name__}: {latency:.0f}ms")
-        
-        return result, latency
+
+        # Solo retornar el resultado (sin latency)
+        return result
     return wrapper
 
 # Configuración de logging
