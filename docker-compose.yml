@@ -1,0 +1,75 @@
+version: '3.8'
+
+services:
+  # ============================================
+  # Servicio Principal: Jupyter Lab
+  # ============================================
+  jupyter:
+    build: .
+    container_name: rag-workshop-jupyter
+    ports:
+      - "8888:8888"  # JupyterLab
+      - "8501:8501"  # Streamlit
+      - "8000:8000"  # FastAPI
+      - "7860:7860"  # Gradio
+    volumes:
+      - ./notebooks:/workspace/notebooks
+      - ./data:/workspace/data
+      - ./src:/workspace/src
+      - ./solutions:/workspace/solutions
+    environment:
+      - JUPYTER_ENABLE_LAB=yes
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+    env_file:
+      - .env
+    command: >
+      jupyter lab
+      --ip=0.0.0.0
+      --port=8888
+      --no-browser
+      --allow-root
+      --NotebookApp.token=''
+      --NotebookApp.password=''
+    restart: unless-stopped
+    networks:
+      - rag-network
+
+  # ============================================
+  # Servicio Opcional: ChromaDB Server
+  # ============================================
+  chromadb:
+    image: chromadb/chroma:latest
+    container_name: rag-workshop-chromadb
+    ports:
+      - "8001:8000"
+    volumes:
+      - chromadb-data:/chroma/chroma
+    environment:
+      - CHROMA_SERVER_HOST=0.0.0.0
+      - CHROMA_SERVER_PORT=8000
+    restart: unless-stopped
+    networks:
+      - rag-network
+
+  # ============================================
+  # Servicio Opcional: Redis Cache
+  # ============================================
+  redis:
+    image: redis:7-alpine
+    container_name: rag-workshop-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    command: redis-server --appendonly yes
+    restart: unless-stopped
+    networks:
+      - rag-network
+
+volumes:
+  chromadb-data:
+  redis-data:
+
+networks:
+  rag-network:
+    driver: bridge

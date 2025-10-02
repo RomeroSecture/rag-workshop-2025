@@ -19,9 +19,31 @@ Workshop intensivo de 8 horas para dominar Retrieval-Augmented Generation (RAG) 
 
 ## 🚀 Quick Start (Para Alumnos)
 
-> **📖 Guía detallada**: Ver [QUICK_START.md](QUICK_START.md) para instrucciones paso a paso
+> **📖 Guías detalladas**: [DOCKER_SETUP.md](DOCKER_SETUP.md) | [QUICK_START.md](QUICK_START.md)
 
-### Opción 1: GitHub Codespaces (Recomendado - Sin instalación)
+### Opción 1: Docker 🐳 (⭐ RECOMENDADO - Máxima Estabilidad)
+
+**Ambiente 100% consistente, sin problemas de versiones**
+
+```bash
+# 1. Clonar repositorio
+git clone https://github.com/[tu-usuario]/rag-workshop-2025.git
+cd rag-workshop-2025
+
+# 2. Configurar API key
+cp .env.example .env
+# Editar .env y añadir tu OPENAI_API_KEY
+
+# 3. Iniciar con un comando
+./start-workshop.sh  # Linux/Mac
+# o start-workshop.bat en Windows
+
+# 4. Abrir navegador en http://localhost:8888
+```
+
+📘 **Guía completa**: [DOCKER_SETUP.md](DOCKER_SETUP.md)
+
+### Opción 2: GitHub Codespaces
 
 1. **Fork este repositorio**
    - Click en el botón "Fork" arriba a la derecha
@@ -44,7 +66,7 @@ Workshop intensivo de 8 horas para dominar Retrieval-Augmented Generation (RAG) 
    - Navega a `notebooks/00_inicio.ipynb`
    - ¡Listo para empezar!
 
-### Opción 2: Google Colab (Backup)
+### Opción 3: Google Colab (Backup)
 
 Si tienes problemas con Codespaces:
 
@@ -53,7 +75,7 @@ Si tienes problemas con Codespaces:
 3. Pega: `https://github.com/[tu-usuario]/rag-workshop-2025`
 4. Selecciona el notebook deseado
 
-### Opción 3: Instalación Local
+### Opción 4: Instalación Local
 
 **⚠️ Requisito**: Python 3.11 (recomendado para evitar conflictos de dependencias)
 
