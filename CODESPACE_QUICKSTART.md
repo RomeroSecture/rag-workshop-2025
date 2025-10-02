@@ -1,5 +1,8 @@
 # 🚀 Quickstart Guide - GitHub Codespaces
 
+**🐍 Ambiente**: Python 3.11 con todas las dependencias pre-instaladas
+**📘 Más detalles**: Ver [ENVIRONMENT.md](ENVIRONMENT.md)
+
 ## ⚡ Setup Rápido (5 minutos)
 
 ### 1️⃣ Configurar API Key
