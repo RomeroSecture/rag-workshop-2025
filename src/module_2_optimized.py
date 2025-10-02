@@ -10,6 +10,10 @@ import json
 from typing import List, Dict, Optional, Any, Tuple
 from collections import OrderedDict
 import numpy as np
+
+# Deshabilitar telemetría de ChromaDB
+os.environ["ANONYMIZED_TELEMETRY"] = "False"
+
 from module_1_basics import Module1_BasicRAG
 from shared_config import RAGMasterConfig, Module, measure_performance
 
@@ -48,7 +52,8 @@ class Module2_OptimizedRAG(Module1_BasicRAG):
 
     def __init__(self):
         """Inicializar con optimizaciones adicionales"""
-        super().__init__()  # Heredar de Module1
+        # Heredar de Module1 pero skip la creación de colección
+        super().__init__(skip_collection_setup=True)
 
         # Actualizar configuración para Módulo 2
         self.module = Module.OPTIMIZED
@@ -64,13 +69,19 @@ class Module2_OptimizedRAG(Module1_BasicRAG):
         self.use_cache = True
         self.use_reranking = True
 
-        # Actualizar nombre de colección
+        # Crear colección para módulo 2
         collection_name = f"{self.config.COLLECTION_NAME}_module2"
+
+        # Eliminar colección existente si existe
         try:
             self.chroma_client.delete_collection(name=collection_name)
-        except:
-            pass
-        self.collection = self.chroma_client.create_collection(collection_name)
+        except ValueError:
+            pass  # Colección no existe, continuar
+
+        # Crear colección nueva
+        self.collection = self.chroma_client.create_collection(
+            name=collection_name
+        )
 
         print(f"✅ Module 2 OptimizedRAG inicializado")
         print(f"   - Cache habilitado: {self.use_cache}")

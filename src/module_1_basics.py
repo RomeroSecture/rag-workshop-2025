@@ -7,6 +7,11 @@ import os
 import time
 from typing import List, Dict, Optional, Any
 import numpy as np
+
+# Deshabilitar telemetría de ChromaDB ANTES de importarlo
+os.environ["ANONYMIZED_TELEMETRY"] = "False"
+os.environ["CHROMA_TELEMETRY"] = "0"
+
 from openai import OpenAI
 import chromadb
 from PyPDF2 import PdfReader
@@ -19,7 +24,7 @@ class Module1_BasicRAG:
     Esta clase será EXTENDIDA en módulos posteriores
     """
 
-    def __init__(self):
+    def __init__(self, skip_collection_setup=False):
         """Inicializar con configuración del módulo"""
         self.module = Module.BASICS
         self.config = RAGMasterConfig()
@@ -34,15 +39,20 @@ class Module1_BasicRAG:
         self.openai_client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
         self.chroma_client = chromadb.Client()
 
-        # Crear colección única para el workshop
-        collection_name = f"{self.config.COLLECTION_NAME}_module1"
-        try:
+        # Crear colección única para el workshop (skip si hereda)
+        if not skip_collection_setup:
+            collection_name = f"{self.config.COLLECTION_NAME}_module1"
+
+            # Eliminar colección existente si existe
+            try:
+                self.chroma_client.delete_collection(name=collection_name)
+            except ValueError:
+                pass  # Colección no existe, continuar
+
+            # Crear colección nueva
             self.collection = self.chroma_client.create_collection(
-                collection_name)
-        except:
-            self.chroma_client.delete_collection(name=collection_name)
-            self.collection = self.chroma_client.create_collection(
-                collection_name)
+                name=collection_name
+            )
 
         # Tracker de métricas
         self.metrics_tracker = MetricsTracker()
@@ -52,10 +62,11 @@ class Module1_BasicRAG:
         self.chunks = []
         self.indexed = False
 
-        print(f"✅ Module 1 BasicRAG inicializado")
-        print(f"   - Modelo: {self.model}")
-        print(f"   - Chunk size: {self.chunk_size}")
-        print(f"   - Chunk overlap: {self.chunk_overlap}")
+        if not skip_collection_setup:
+            print(f"✅ Module 1 BasicRAG inicializado")
+            print(f"   - Modelo: {self.model}")
+            print(f"   - Chunk size: {self.chunk_size}")
+            print(f"   - Chunk overlap: {self.chunk_overlap}")
 
     def load_document(self, filepath: str = None) -> str:
         """Cargar documento de prueba"""
