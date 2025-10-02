@@ -1,0 +1,61 @@
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Python
+__pycache__
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+.venv
+pip-log.txt
+pip-delete-this-directory.txt
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Jupyter
+.ipynb_checkpoints
+*.ipynb_checkpoints
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# Logs
+*.log
+install_log.txt
+install_output.txt
+
+# Temporary files
+*.tmp
+*.temp
+.cache/
+
+# Documentation (no needed in container)
+README.md
+DOCKER_SETUP.md
+CODESPACE_QUICKSTART.md
+ENVIRONMENT.md
+QUICK_START.md
+
+# GitHub
+.github/
+.devcontainer/
