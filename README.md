@@ -57,13 +57,18 @@ Si tienes problemas con Codespaces:
 
 ### Opción 3: Instalación Local
 
+**⚠️ Requisito**: Python 3.11 (recomendado para evitar conflictos de dependencias)
+
 ```bash
+# Verificar versión de Python
+python --version  # Debe ser Python 3.11.x
+
 # Clonar el repositorio
 git clone https://github.com/[tu-usuario]/rag-workshop-2025
 cd rag-workshop-2025
 
-# Crear ambiente virtual
-python -m venv venv
+# Crear ambiente virtual con Python 3.11
+python3.11 -m venv venv  # o 'python -m venv venv' si ya tienes 3.11
 source venv/bin/activate  # En Windows: venv\Scripts\activate
 
 # Instalar dependencias
@@ -76,6 +81,8 @@ cp .env.example .env
 # Lanzar Jupyter
 jupyter lab
 ```
+
+**📘 Instalación de Python 3.11**: Ver [ENVIRONMENT.md](ENVIRONMENT.md) para instrucciones detalladas
 
 ## 📚 Estructura del Workshop
 
